@@ -94,3 +94,8 @@ jspm_packages
 
 .idea/
 public/mpddirectory/
+
+.vscode
+./public/.DS_Store
+./public/node_modules/
+./public/npm-debug.log
