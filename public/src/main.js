@@ -5,6 +5,10 @@ import App from './App'
 import router from './router'
 import VueResource from 'vue-resource'
 
+// Css import
+import normalize from './assets/css/normalize.css'
+import skeleton from './assets/css/skeleton.css'
+
 Vue.use(VueResource);
 
 Vue.http.interceptors.push(function(request, next) {
