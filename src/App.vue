@@ -1,83 +1,110 @@
 <template>
   <div id="app">
-    <router-view name="header"></router-view>
     <router-view></router-view>
-    <router-view name="footer"></router-view>
   </div>
 </template>
 
 <script>
-    export default {
-        name: 'app',
-        mounted() {
-            this.$token = this.$resource('gettokencsrf');
-            this.$token.query().then((response) => {
-                console.log(response);
-            }, (response) => {
-                console.error('error', response);
-            });
-        }
+  export default {
+    name: 'app',
+    data() {
+      return {
+        tokenCSRF: ''
+      }
+    },
+    mounted() {
+      let date = new Date(),
+          plusDay = new Date( new Date().getTime() -  ( new Date().getTimezoneOffset() * 60000 ) );
+      console.log( new Date() );
+      console.log( plusDay );
+      if (date === localStorage['createDateToken']) {
+        this.$token = this.$resource('gettokencsrf');
+
+        this.$token.get().then((response) => {
+          localStorage.setItem('createDateToken', plusDay);
+          localStorage.setItem('tokenCSRF', response.body.tokenCSRF);
+          console.log(localStorage['tokenCSRF']);
+        }, (response) => {
+          console.error('error', response);
+        });
+
+      }
     }
+  }
 </script>
 
 <style>
-    /* Element for all page start */
+  /* Element for all page start */
+  /* Content start */
 
-    .card {
-        background: #fff;
-        padding: 40px;
-        margin-bottom: 10px;
-        border-radius: 2px;
-        -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-        -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    }
+  #content {
+    padding: 60px 0 20px 0;
+  }
 
-    .text-center {
-        text-align: center;
-    }
+  /* Content end */
 
-    .uppercase {
-        text-transform: uppercase;
-    }
+  .card {
+    background: #fff;
+    padding: 20px 40px;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  }
 
-    label {
-        cursor: pointer;
-    }
+  .text-center {
+    text-align: center;
+  }
 
-    .max-center {
-        max-width: 1280px;
-        margin: 0 auto;
-    }
+  .uppercase {
+    text-transform: uppercase;
+  }
 
-    #licennse {
-        font-size: 0.7em;
-    }
-    /* Modal start */
+  label {
+    cursor: pointer;
+  }
 
-    #modal-info {
-        display: none;
-        background: rgba(0, 0, 0, 0.7);
-        position: fixed;
-        top: 0%;
-        left: 0%;
-        padding-top: 5%;
-        height: 100%;
-        width: 100%;
-        z-index: 100;
-    }
+  .max-center {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
 
-    #modal-info .modal-block {
-        position: relative;
-        z-index: 101;
-    }
+  #licennse {
+    font-size: 0.7em;
+  }
 
-    #modal-info .modal-block .close-modal {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        cursor: pointer;
-    }
-    /* Modal end */
-    /* Element for all page end */
+  /* Modal start */
+
+  #modal-info {
+    display: none;
+    background: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 5%;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+  }
+
+  #modal-info .modal-block {
+    position: relative;
+    z-index: 101;
+  }
+
+  #modal-info .modal-block .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+  }
+
+  .red {
+    color: #F44336;
+  }
+
+  /* Modal end */
+
+  /* Element for all page end */
 </style>
