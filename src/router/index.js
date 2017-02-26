@@ -5,6 +5,7 @@ import Registration from 'components/Registration'
 import RegistrationScreen from 'components/RegistrationScreen'
 import ForgetPass from 'components/ForgetPass'
 import EditPass from 'components/EditPass'
+import Cabinet from 'components/CabinetMonitor'
 
 Vue.use(Router);
 
@@ -35,9 +36,15 @@ export default new Router({
         }
     },{
         path: '/resetpass',
-        name: 'forget',
+        name: 'resetpass',
         components: {
             default: EditPass
+        }
+    },{
+        path: '/cabinet',
+        name: 'cabinet',
+        components: {
+            default: Cabinet
         }
     }, {
         path: '*',

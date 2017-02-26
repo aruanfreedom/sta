@@ -1,10 +1,10 @@
 <template>
      <!-- Footer start -->
-    <div id="footer" class="u-full-width" v-bind:class="{ 'footer-relative': relative }">
+    <div id="footer" class="u-full-width" :class="{ 'footer-relative': relative }">
         <div class="max-center">
             <a id="info-service" href="#">О сервисе</a>
             <a href="#">Условия пользование</a>
-            <a href="#">Правило и безопасность {{relativeCls}}</a>
+            <a href="#">Правило и безопасность</a>
             <span class="u-pull-right">
             @2017 AdsMe, LLC
         </span>

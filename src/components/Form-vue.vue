@@ -19,12 +19,12 @@
         <form action="/login" @submit.prevent="auth" class="card">
           <div class="form-skl" v-if="role === 'advertiser' || role === 'screenHolder'">
             <label>Название компании <span class="red">&#9913;</span>
-              <input type="text" v-model="nameCompany" class="u-full-width" required>
+              <input type="text" placeholder="ТОО Company" v-model="nameCompany" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl">
             <label>Email <span class="red" v-if="role === 'advertiser' || role === 'screenHolder'">&#9913;</span>
-              <input type="email" v-model="email" class="u-full-width" required>
+              <input type="email" v-model="email" autofocus placeholder="user@mail.com" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl" :class="{error: isErrorPass}">
@@ -45,12 +45,12 @@
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
             <label>Адрес экрана <span class="red">&#9913;</span>
-              <input type="text" v-model="adressMonitor" class="u-full-width" required>
+              <input type="text" placeholder="ул. Сыганака, 15" v-model="adressMonitor" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
             <label>Стоимость за секунду (тг) <span class="red">&#9913;</span>
-              <input type="number" v-model="priceSecond" class="u-full-width" required>
+              <input type="number" placeholder="50" v-model="priceSecond" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
@@ -62,7 +62,8 @@
           <div class="form-skl" v-if="role === 'screenHolder'">
             <h6 class="red">Укажите реквизиты для принятия оплаты</h6>
             <label>Номер карточки <span class="red">&#9913;</span>
-              <input type="text" class="u-full-width" placeholder="1234-5678-9012-3456" v-mask="'####-####-####-####'" v-model="numberCard" required>
+              <input type="text" class="u-full-width" placeholder="1234-5678-9012-3456" v-mask="'####-####-####-####'"
+                     v-model="numberCard" required>
               <small class="error-msg" v-if="isErrorCard">* Не правильный формат</small>
             </label>
           </div>
@@ -209,6 +210,7 @@
         let loginSend = () => {
           dataJson = JSON.stringify(loginData);
           this.$auth = this.$resource('login');
+          console.log(dataJson);
           this.$auth.save({}, dataJson).then((response) => {
             console.log(response);
             if (response.body.code === 'activateEmailError') {
@@ -222,6 +224,7 @@
               localStorage.setItem('role', response.body.role);
               localStorage.setItem('sessionToken', response.body.sessionToken);
               localStorage.setItem('saveAuth', this.saveAuth);
+              this.$router.push('/cabinet');
             } else {
               this.isErrorUser = true;
             }

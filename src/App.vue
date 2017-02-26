@@ -15,9 +15,10 @@
     mounted() {
       let date = new Date(),
           plusDay = new Date( new Date().getTime() -  ( new Date().getTimezoneOffset() * 60000 ) );
-      console.log( new Date() );
-      console.log( plusDay );
-      if (date === localStorage['createDateToken']) {
+      console.log( 'start ' + date );
+      console.log( 'end ' + localStorage['createDateToken'] );
+
+      if (date === localStorage['createDateToken'] || !localStorage['createDateToken']) {
         this.$token = this.$resource('gettokencsrf');
 
         this.$token.get().then((response) => {

@@ -75,7 +75,7 @@
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             activateToken: localStorage['activateToken'],
-            pass: this.isErrorPass
+            pass: this.confirmNewPass
           },
           dataJson = JSON.stringify(data);
 
@@ -84,7 +84,9 @@
 
           this.$auth.save({}, dataJson).then((response) => {
             console.log(response);
-            this.$router.push('/');
+            if (response.body.code === 'ok') {
+              this.$router.push('/');
+            }
           }, (response) => {
             console.error('error', response);
           });
@@ -98,7 +100,7 @@
         } else {
           sendNewPass();
           this.isErrorPass = false;
-          this.isErrorPass = false;
+          this.isErrorPassVerify = false;
         }
 
 
