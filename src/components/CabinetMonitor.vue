@@ -90,11 +90,11 @@
           document.addEventListener('DOMContentLoaded', initApp);
 
 
-      $('#player').on('click', function() {
-        console.log("jquery");
-        manifestUri = 'http://test.efflife.kz/mpddirectory/nQvQAf/output893302.mpd';
-        initPlayer();
-      });
+//      $('#player').on('click', function() {
+//        console.log("jquery");
+//        manifestUri = 'http://test.efflife.kz/mpddirectory/nQvQAf/output893302.mpd';
+//        initPlayer();
+//      });
 
 
     },

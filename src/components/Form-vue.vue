@@ -219,6 +219,9 @@
                 this.isErrorEmail = false;
               }, 4000);
             }
+          if (response.body.code === 'noCsrfToken') {
+               alert("Token error");
+          }
             if (response.body.code === 'ok') {
               this.isErrorUser = false;
               localStorage.setItem('role', response.body.role);
