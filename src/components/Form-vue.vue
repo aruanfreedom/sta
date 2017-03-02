@@ -9,17 +9,11 @@
           <p>Специальный символ из списка "@#$%"</p>
           <p>Длину от 8 символов</p>
         </div>
-        <div class="error-reg-msg" v-if="isErrorEmail">
-          <p class="red">* Пожалуйста активируйте почту </p>
-        </div>
-        <div class="error-reg-msg" v-if="isErrorEmailBusy">
-          <p class="red">* Это почта зарегистрированна </p>
-        </div>
         <h4 class="text-center"> {{title}}</h4>
         <form action="/login" @submit.prevent="auth" class="card">
           <div class="form-skl" v-if="role === 'advertiser' || role === 'screenHolder'">
             <label>Название компании <span class="red">&#9913;</span>
-              <input type="text" placeholder="ТОО Company" v-model="nameCompany" class="u-full-width" required>
+              <input type="text" autofocus placeholder="ТОО Company" v-model="nameCompany" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl">
@@ -34,7 +28,6 @@
                      pattern="((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,})">
               <input v-if="role !== 'advertiser' && role !== 'screenHolder'" type="password" v-model="password"
                      class="u-full-width" required>
-              <small class="error-msg" v-if="isErrorUser">* Такой пользователь не найден</small>
             </label>
           </div>
           <div class="form-skl" :class="{error: isErrorPass}" v-if="role === 'advertiser' || role === 'screenHolder'">
@@ -62,7 +55,7 @@
           <div class="form-skl" v-if="role === 'screenHolder'">
             <h6 class="red">Укажите реквизиты для принятия оплаты</h6>
             <label>Номер карточки <span class="red">&#9913;</span>
-              <input type="text" class="u-full-width" placeholder="1234-5678-9012-3456" v-mask="'####-####-####-####'"
+              <input type="text" class="credit" placeholder="1234-5678-9012-3456"
                      v-model="numberCard" required>
               <small class="error-msg" v-if="isErrorCard">* Не правильный формат</small>
             </label>
@@ -102,6 +95,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
+  import miniToastr from 'mini-toastr'
 
   export default {
     name: 'login',
@@ -153,8 +147,6 @@
         workStart: '',
         workEnd: '',
         numberCard: '',
-        isErrorEmail: false,
-        isErrorEmailBusy: false,
         isErrorPass: false,
         isErrorPassVerify: false,
         isErrorUser: false,
@@ -187,20 +179,19 @@
 
           console.log(dataJson);
 
-          this.$auth = this.$resource('register');
-          this.$auth.save({}, dataJson).then((response) => {
+          this.$resource('register').save({}, dataJson).then((response) => {
             console.log(response);
             if (response.body.resultFromDb.n === 1) {
-              this.isErrorEmail = true;
-              setTimeout(() => {
-                this.isErrorEmail = false;
+              miniToastr.warn("Пожалуйста активируйте почту!", "Оповещение", 8000, () => {
                 this.$router.push('/');
-              }, 4000);
+              });
+              miniToastr.success("Поздравляю! Вы зарегистрированны", "Оповещение", 5000);
             } else if (response.body.resultFromDb.message) {
-              this.isErrorEmailBusy = true;
-              setTimeout(() => {
-                this.isErrorEmailBusy = false;
-              }, 4000);
+              miniToastr.error("Почта занята", "Ошибка!", 5000);
+            } else if (response.body.code === "noCsrfToken") {
+              miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+                this.$router.push('/');
+              });
             }
           }, (response) => {
             console.error('error', response);
@@ -209,28 +200,32 @@
 
         let loginSend = () => {
           dataJson = JSON.stringify(loginData);
-          this.$auth = this.$resource('login');
           console.log(dataJson);
-          this.$auth.save({}, dataJson).then((response) => {
+          this.$resource('login').save({}, dataJson).then((response) => {
             console.log(response);
             if (response.body.code === 'activateEmailError') {
-              this.isErrorEmail = true;
-              setTimeout(() => {
-                this.isErrorEmail = false;
-              }, 4000);
-            }
-          if (response.body.code === 'noCsrfToken') {
-               alert("Token error");
-          }
-            if (response.body.code === 'ok') {
-              this.isErrorUser = false;
+              miniToastr.error("Пожалуйста активируйте почту!", "Ошибка!", 5000);
+            } else if (response.body.code === 'userNotFound') {
+              miniToastr.error("Такой пользователь не найден", "Ошибка!", 5000);
+            } else if (response.body.code === 'noCsrfToken') {
+              miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+                this.$router.push('/');
+              });
+            } else if (response.body.code === 'passWrongRegExp' || response.body.code === 'passWrong') {
+              miniToastr.error("Не правильный логин/пароль", "Ошибка!", 5000, () => {
+                this.$router.push('/');
+              });
+            } else if (response.body.code === 'ok') {
               localStorage.setItem('role', response.body.role);
               localStorage.setItem('sessionToken', response.body.sessionToken);
               localStorage.setItem('saveAuth', this.saveAuth);
-              this.$router.push('/cabinet');
-            } else {
-              this.isErrorUser = true;
             }
+            if (response.body.role === "screenHolder") {
+              this.$router.push('/cabinet');
+            } else if(response.body.role === "advertiser") {
+              this.$router.push('/cabinet-advertiser');
+            }
+
           }, (response) => {
             console.error('error', response);
           });
@@ -253,12 +248,21 @@
         }
 
       }
+    },
+    mounted() {
+      $(".credit").credit();
+      $(".credit-cell").attr("required", "required");
     }
   }
 </script>
 
 <style>
   /* Login start */
+
+  .credit-input .credit-cell {
+    margin-right: 14px;
+    width: 42px;
+  }
 
   .login {
     position: relative;

@@ -55,12 +55,12 @@
     },
     watch: {
       newPass: function (val) {
-          let pattern = val.match("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,})");
-          if (pattern) {
-            this.isErrorPassVerify = false;
-          } else {
-            this.isErrorPassVerify = true;
-          }
+        let pattern = val.match("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,})");
+        if (pattern) {
+          this.isErrorPassVerify = false;
+        } else {
+          this.isErrorPassVerify = true;
+        }
       },
       confirmNewPass: function (val) {
         if (val !== this.newPass) {
@@ -68,6 +68,13 @@
         } else {
           this.isErrorPass = false;
         }
+      }
+    },
+    mounted() {
+      if (!localStorage['tokenCSRF']) {
+        miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+          this.$router.push('/');
+        });
       }
     },
     methods: {
@@ -95,8 +102,8 @@
         // Проверка паролей
         if (this.newPass !== this.confirmNewPass) {
           this.isErrorPass = true;
-        } else if(this.isErrorPassVerify) {
-            return false;
+        } else if (this.isErrorPassVerify) {
+          return false;
         } else {
           sendNewPass();
           this.isErrorPass = false;

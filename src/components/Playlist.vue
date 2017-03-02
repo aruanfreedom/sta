@@ -1,8 +1,11 @@
 <template>
   <div id="playlist">
     <div class="card playlist-add">
-      <span class="playlist-title">Ваш плейлист</span>
-      <img class="u-pull-right" src="static/img/icons/ic_playlist_add_black_36px.svg" alt="delete">
+      <span class="playlist-title">{{playlistTitle}}</span>
+      <label for="add-video" class="u-pull-right" v-if="addVideoVisible">
+        <img src="static/img/icons/ic_playlist_add_black_36px.svg" alt="add-video">
+      </label>
+      <input type='file' id="add-video" accept='video/*' @change="addVideo"/>
     </div>
     <ul class="card playlists-items">
       <li class="playlists-item not-confirmed">
@@ -110,12 +113,86 @@
 
 <script>
   export default {
-      name: 'playlist'
+    name: 'playlist',
+    props: ['playlistTitleParent', 'iconVisibleAdd'],
+    data() {
+      return {
+        playlistTitle: this.playlistTitleParent || '',
+        addVideoVisible: this.iconVisibleAdd || false
+      }
+    },
+    methods: {
+      addVideo: function (e) {
+        let dataJson,
+            parogressNumber = 0,
+            formData = new FormData(),
+            file = e.target.files[0] || e.dataTransfer.files[0];
+
+//        if (!file.length) {
+//          return false;
+//        }
+
+
+        const progress = () => {
+          console.log('PROGRESS', parogressNumber++);
+        };
+
+        formData.append('file', file);
+        console.log(file);
+
+        // Первое обращение partFile
+
+        this.$resource('addvideo', {}, {}, {
+          headers: {
+            "tokenCSRF": localStorage['tokenCSRF'],
+            "Content-Type": "boundary=----WebKitFormBoundaryxpcMTuXDEYFClcUI",
+            "sizeFile": "partFile",
+            "sessionToken": localStorage['sessionToken']
+          },
+          progress: progress
+        }).save({}, formData).then((response) => {
+          console.log("Первое обращение partFile");
+          console.log(response);
+
+          if(response.body.code === "ok") {
+            // Второе обращение fullFile
+            this.$resource('addvideo', [], [], {
+              headers: {
+                "tokenCSRF": localStorage['tokenCSRF'],
+                "sizeFile": "fullFile",
+                "sessionToken": localStorage['sessionToken']
+              },
+              progress: progress
+            }).save({}, formData).then((response) => {
+              console.log("Второе обращение fullFile");
+              console.log(response);
+            }, (response) => {
+              console.error('error', response);
+            });
+          }
+
+        }, (response) => {
+          console.error('error', response);
+        });
+
+
+
+
+
+      }
+    }
   }
 </script>
 
 <style>
   /* Playlist start */
+
+  #add-video {
+    cursor: pointer;
+    position: absolute;
+    visibility: hidden;
+    width: 10px;
+  }
 
   #playlist .playlists-items {
     overflow-y: scroll;
@@ -215,6 +292,7 @@
   }
 
   #playlist .playlist-add {
+    position: relative;
     padding: 20px 25px 20px 20px;
     border-bottom: 2px solid #f7f7f7;
     margin: 0;

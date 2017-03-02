@@ -45,9 +45,9 @@
           },
           dataJson = JSON.stringify(data);
 
-        this.$auth = this.$resource('resetpass');
         console.log(dataJson);
-        this.$auth.save({}, dataJson).then((response) => {
+
+        this.$resource('resetpass').save({}, dataJson).then((response) => {
           if (response.body.activateToken) {
             localStorage.setItem('activateToken', response.body.activateToken);
             this.$router.push('/resetpass');

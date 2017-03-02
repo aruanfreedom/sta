@@ -42,17 +42,17 @@
     props: ['relativeCls'],
     mounted() {
 
-        if(!localStorage['tokenCSRF']) {
-          miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
-            this.$router.push('/');
-          });
-        }
+      if(!localStorage['tokenCSRF']) {
+        miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+          this.$router.push('/');
+        });
+      }
 
       let dataJson,
-          allVideoData = {
-            tokenCSRF: localStorage['tokenCSRF'],
-            sessionToken: localStorage['sessionToken']
-          };
+        allVideoData = {
+          tokenCSRF: localStorage['tokenCSRF'],
+          sessionToken: localStorage['sessionToken']
+        };
 
       dataJson = JSON.stringify(allVideoData);
 
@@ -126,15 +126,15 @@
       return {
         relative: this.relativeCls,
         notification: true,
-        playlistTitle: 'Предлогаемые',
-        iconVisible: false,
+        playlistTitle: 'Все плейлисты',
+        iconVisible: true,
         nameMenus: [
           {
-            name: 'Cab экран',
-            link: '#Cab'
+            name: 'Кабинет ИПешника',
+            link: '#Кабинет ИПешника'
           }, {
-            name: 'On-air',
-            link: '#on-air'
+            name: 'Выбрать экран для размещения',
+            link: '#Выбрать экран для размещения'
           },
         ]
       }

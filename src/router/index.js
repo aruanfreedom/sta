@@ -6,6 +6,7 @@ import RegistrationScreen from 'components/RegistrationScreen'
 import ForgetPass from 'components/ForgetPass'
 import EditPass from 'components/EditPass'
 import Cabinet from 'components/CabinetMonitor'
+import CabinetAdvertiser from 'components/CabinetAdvertiser'
 
 Vue.use(Router);
 
@@ -45,6 +46,12 @@ export default new Router({
         name: 'cabinet',
         components: {
             default: Cabinet
+        }
+    },{
+        path: '/cabinet-advertiser',
+        name: 'cabinet-advertiser',
+        components: {
+            default: CabinetAdvertiser
         }
     }, {
         path: '*',
