@@ -53,6 +53,7 @@
             this.$router.push('/resetpass');
           }
         }, (response) => {
+          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
           console.error('error', response);
         });
       }

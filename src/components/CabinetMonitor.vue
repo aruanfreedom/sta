@@ -31,6 +31,7 @@
   import Bottom from './Bottom';
   import Playlist from './Playlist';
   import flowPlayerCss from '../assets/css/skin.css'
+  import miniToastr from 'mini-toastr'
 
   export default {
     name: 'cabinet',

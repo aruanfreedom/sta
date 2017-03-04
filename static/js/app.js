@@ -3,17 +3,17 @@
 
   window.onload = function () {
 
-    var hideOption = function (opt) {
-      $(opt).parents(".playlists-item").on("mouseleave", function () {
-        $(opt).hide("slow");
-      });
-    };
-
-    $(".options").on("click", function () {
-      var optionTitle = $(this).find('.options-title');
-      optionTitle.show("slow");
-      hideOption(optionTitle);
-    });
+    // var hideOption = function (opt) {
+    //   $(opt).parents(".playlists-item").on("mouseleave", function () {
+    //     $(opt).hide("slow");
+    //   });
+    // };
+    //
+    // $(".options").on("click", function () {
+    //   var optionTitle = $(this).find('.options-title');
+    //   optionTitle.show("slow");
+    //   hideOption(optionTitle);
+    // });
 
     // Options click end
 
