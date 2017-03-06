@@ -7,6 +7,10 @@ import ForgetPass from 'components/ForgetPass'
 import EditPass from 'components/EditPass'
 import Cabinet from 'components/CabinetMonitor'
 import CabinetAdvertiser from 'components/CabinetAdvertiser'
+import ListsCompany from 'components/ListsCompany'
+import Company from 'components/Company'
+import Air from 'components/air'
+import NotPage from 'components/NotPage'
 
 Vue.use(Router);
 
@@ -48,16 +52,34 @@ export default new Router({
             default: Cabinet
         }
     },{
+        path: '/search-company',
+        name: 'searchCompany',
+        components: {
+            default: ListsCompany
+        }
+    },{
+        path: '/getonecompany/:id',
+        name: 'getonecompany',
+        components: {
+            default: Company
+        }
+    },{
         path: '/cabinet-advertiser',
         name: 'cabinet-advertiser',
         components: {
             default: CabinetAdvertiser
         }
+    },{
+        path: '/on-air',
+        name: 'on-air',
+        components: {
+            default: Air
+        }
     }, {
         path: '*',
         name: 'other',
         components: {
-            default: Login
+            default: NotPage
         }
     }]
 })

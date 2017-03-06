@@ -18,16 +18,29 @@
           </div>
           <div class="form-skl">
             <label>Email <span class="red" v-if="role === 'advertiser' || role === 'screenHolder'">&#9913;</span>
-              <input type="email" v-model="email" autofocus placeholder="user@mail.com" class="u-full-width" required>
+              <input type="email"
+                     v-model="email"
+                     :value="email"
+                     autofocus
+                     placeholder="user@mail.com"
+                     class="u-full-width"
+                     required>
             </label>
           </div>
           <div class="form-skl" :class="{error: isErrorPass}">
             <label>Пароль <span class="red" v-if="role === 'advertiser' || role === 'screenHolder'">&#9913;</span>
-              <input v-if="role === 'advertiser' || role === 'screenHolder'" type="password" v-model="password"
-                     class="u-full-width" required
+              <input v-if="role === 'advertiser' || role === 'screenHolder'"
+                     type="password"
+                     v-model="password"
+                     :value="password"
+                     class="u-full-width"
+                     required
                      pattern="((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,})">
-              <input v-if="role !== 'advertiser' && role !== 'screenHolder'" type="password" v-model="password"
-                     class="u-full-width" required>
+              <input v-if="role !== 'advertiser' && role !== 'screenHolder'"
+                     type="password"
+                     v-model="password"
+                     class="u-full-width"
+                     required>
             </label>
           </div>
           <div class="form-skl" :class="{error: isErrorPass}" v-if="role === 'advertiser' || role === 'screenHolder'">
@@ -137,11 +150,11 @@
     },
     data() {
       return {
-        email: '',
-        password: '',
+        email: localStorage['login'],
+        password: localStorage['password'],
         nameCompany: '',
         confirmPassword: '',
-        saveAuth: false,
+        saveAuth: localStorage['saveAuth'],
         adressMonitor: '',
         priceSecond: '',
         workStart: '',
@@ -220,6 +233,14 @@
               localStorage.setItem('role', response.body.role);
               localStorage.setItem('sessionToken', response.body.sessionToken);
               localStorage.setItem('saveAuth', this.saveAuth);
+              if(this.saveAuth) {
+                localStorage.setItem('login', this.email);
+                localStorage.setItem('password', this.password);
+              } else {
+                localStorage.removeItem('login');
+                localStorage.removeItem('password');
+                localStorage.removeItem('saveAuth');
+              }
             }
             if (response.body.role === "screenHolder") {
               this.$router.push('/cabinet');

@@ -5,10 +5,13 @@ import App from './App'
 import router from './router'
 import VueResource from 'vue-resource'
 import miniToastr from 'mini-toastr'
+import fullCalendar from 'vue-fullcalendar'
+
 
 // Css import
 import normalize from './assets/css/normalize.css'
 import skeleton from './assets/css/skeleton.css'
+
 
 Vue.use(VueResource);
 

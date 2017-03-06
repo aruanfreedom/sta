@@ -1,7 +1,7 @@
 <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
   <style>
     path {
-      fill: #009688;
+      fill: #000;
     }
   </style>
     <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>

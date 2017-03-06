@@ -1,20 +1,18 @@
 <template>
   <div>
     <TopMenu :notification="notification" :nameLink="nameMenus"></TopMenu>
+
     <div id="content">
       <!-- Player start -->
       <div id="player">
         <div class="row">
           <div class="eight columns">
-            <video id="video"
-                   width="640"
-                   poster="//shaka-player-demo.appspot.com/assets/poster.jpg"
-                   controls autoplay></video>
+            <VideoPlayer></VideoPlayer>
           </div>
 
           <!-- Playlist -->
           <div class="four columns">
-            <Playlist :iconVisibleAdd="iconVisible" :playlistTitleParent="playlistTitle"></Playlist>
+            <Playlist :iconVisibleAdd="iconVisible" :advertiserAccess="advertiser" :playlistTitleParent="playlistTitle" v-on:linkVideo="linkVideoParent"></Playlist>
           </div>
           <!-- Playlist end -->
 
@@ -30,114 +28,87 @@
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
   import Playlist from './Playlist';
+  import VideoPlayer from './VideoPlayer';
   import flowPlayerCss from '../assets/css/skin.css'
   import miniToastr from 'mini-toastr'
 
   export default {
-    name: 'cabinet',
+    name: 'cabinetAdvertiser',
     components: {
       'TopMenu': TopMenu,
       'Bottom': Bottom,
-      'Playlist': Playlist
+      'Playlist': Playlist,
+      'VideoPlayer': VideoPlayer
     },
     props: ['relativeCls'],
-    mounted() {
-
-        if(!localStorage['tokenCSRF']) {
-          miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
-            this.$router.push('/');
-          });
-        }
-
-      let dataJson,
-          allVideoData = {
-            tokenCSRF: localStorage['tokenCSRF'],
-            sessionToken: localStorage['sessionToken']
-          };
-
-      dataJson = JSON.stringify(allVideoData);
-
-//      console.log(dataJson);
-
-//      this.$resource('getallvideoforscreenholder').save({}, dataJson).then((response) => {
-//        console.log(response);
-//      }, (response) => {
-//        console.error('error', response);
-//      });
-
-//        var manifestUri = '//storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
-      var manifestUri = '//angel-one/dash.mpd';
-
-      function initApp() {
-        // Install built-in polyfills to patch browser incompatibilities.
-        shaka.polyfill.installAll();
-
-        // Check to see if the browser supports the basic APIs Shaka needs.
-        if (shaka.Player.isBrowserSupported()) {
-          // Everything looks good!
-          initPlayer();
-        } else {
-          // This browser does not have the minimum set of APIs we need.
-          console.error('Browser not supported!');
-        }
-      }
-
-      function initPlayer() {
-        // Create a Player instance.
-        var video = document.getElementById('video');
-        var player = new shaka.Player(video);
-
-        // Attach player to the window to make it easy to access in the JS console.
-        window.player = player;
-
-        // Listen for error events.
-        //player.addEventListener('error', onErrorEvent);
-
-        // Try to load a manifest.
-        // This is an asynchronous process.
-
-        player.load(manifestUri).then(function () {
-          // This runs if the asynchronous load is successful.
-          console.log('The video has now been loaded!');
-        }).catch(onError);  // onError is executed if the asynchronous load fails.
-      }
-
-      function onErrorEvent(event) {
-        // Extract the shaka.util.Error object from the event.
-        onError(event.detail);
-      }
-
-      function onError(error) {
-        // Log the error.
-        console.error('Error code', error.code, 'object', error);
-      }
-
-      document.addEventListener('DOMContentLoaded', initApp);
-
-
-//      $('#player').on('click', function() {
-//        console.log("jquery");
-//        manifestUri = 'http://test.efflife.kz/mpddirectory/nQvQAf/output893302.mpd';
-//        initPlayer();
-//      });
-
-
-    },
     data() {
       return {
         relative: this.relativeCls,
+        advertiser: false,
         notification: true,
         playlistTitle: 'Предлогаемые',
         iconVisible: false,
         nameMenus: [
           {
             name: 'Cab экран',
-            link: '#Cab'
+            link: '#cabinet'
           }, {
             name: 'On-air',
             link: '#on-air'
-          },
+          }
         ]
+      }
+    },
+    methods: {
+      linkVideoParent: function (video) {
+        var manifestUri = video;
+
+        function initApp() {
+          // Install built-in polyfills to patch browser incompatibilities.
+          shaka.polyfill.installAll();
+
+          // Check to see if the browser supports the basic APIs Shaka needs.
+          if (shaka.Player.isBrowserSupported()) {
+            // Everything looks good!
+            initPlayer();
+          } else {
+            // This browser does not have the minimum set of APIs we need.
+            console.error('Browser not supported!');
+          }
+        }
+
+        function initPlayer() {
+          // Create a Player instance.
+          var video = document.getElementById('video');
+          var player = new shaka.Player(video);
+
+//         Attach player to the window to make it easy to access in the JS console.
+          window.player = player;
+
+//         Listen for error events.
+          player.addEventListener('error', onErrorEvent);
+
+//         Try to load a manifest.
+//         This is an asynchronous process.
+
+          player.load(manifestUri).then(function () {
+            // This runs if the asynchronous load is successful.
+            console.log('The video has now been loaded!');
+          }).catch(onError);  // onError is executed if the asynchronous load fails.
+        }
+
+        function onErrorEvent(event) {
+          // Extract the shaka.util.Error object from the event.
+          onError(event.detail);
+        }
+
+        function onError(error) {
+          // Log the error.
+          console.error('Error code', error.code, 'object', error);
+        }
+
+        initApp();
+
       }
     }
   }
@@ -145,10 +116,6 @@
 
 <style scoped>
   /* Player start */
-
-  video {
-    width: 100%;
-  }
 
   #player {
     max-width: 1280px;
@@ -164,17 +131,6 @@
 
   #select-company .company-skrin img {
     width: 100%;
-  }
-
-  #player #video {
-    /*height: 100%;*/
-    height: 470px;
-    width: 100%;
-  }
-
-  .flowplayer.is-splash,
-  .flowplayer .fp-message {
-    background-color: #bbb;
   }
 
   /* Player end */

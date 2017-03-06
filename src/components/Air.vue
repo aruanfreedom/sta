@@ -6,16 +6,9 @@
       <!-- Player start -->
       <div id="player">
         <div class="row">
-          <div class="eight columns">
+          <div class="twelve columns">
             <VideoPlayer></VideoPlayer>
           </div>
-
-          <!-- Playlist -->
-          <div class="four columns">
-            <Playlist :iconVisibleAdd="iconVisible" :advertiserAccess="advertiser" :playlistTitleParent="playlistTitle" v-on:linkVideo="linkVideoParent"></Playlist>
-          </div>
-          <!-- Playlist end -->
-
         </div>
       </div>
       <!-- Player end -->
@@ -27,7 +20,6 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import Playlist from './Playlist';
   import VideoPlayer from './VideoPlayer';
   import flowPlayerCss from '../assets/css/skin.css'
   import miniToastr from 'mini-toastr'
@@ -37,34 +29,58 @@
     components: {
       'TopMenu': TopMenu,
       'Bottom': Bottom,
-      'Playlist': Playlist,
       'VideoPlayer': VideoPlayer
     },
     props: ['relativeCls'],
     data() {
       return {
         relative: this.relativeCls,
-        advertiser: true,
-        playlistTitle: 'Все плейлисты',
-        iconVisible: true,
+        advertiser: false,
         notification: true,
+        playlistTitle: 'Предлогаемые',
+        iconVisible: false,
         nameMenus: [
           {
-            name: 'Кабинет ИПешника',
-            link: '#cabinet-advertiser'
+            name: 'Cab экран',
+            link: '#cabinet'
           }, {
-            name: 'Выбрать экран для размещения',
-            link: '#search-company'
+            name: 'On-air',
+            link: '#on-air'
           }
         ]
       }
     },
     mounted() {
 
-    },
-    methods: {
-      linkVideoParent: function (video) {
-        var manifestUri = video;
+      let data = {
+        tokenCSRF: localStorage['tokenCSRF'],
+        sessionToken: localStorage['sessionToken'],
+        dateNow: new Date()
+      },
+      dataJson = JSON.stringify(data),
+
+      obj = [
+          {
+            id: 1,
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/XicTds/output878398.mpd"
+          },{
+            id: 2,
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/YNxdl3/output480454.mpd"
+          },{
+            id: 3,
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/qEKL9l/output506971.mpd"
+          }
+      ];
+
+      this.$resource('getonair').save({}, dataJson).then((response) => {
+        console.log(response);
+      }, (response) => {
+        miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+        console.error('error', response);
+      });
+
+
+        var manifestUri = "http://test.efflife.kz/mpddirectory/YNxdl3/output480454.mpd";
 
         function initApp() {
           // Install built-in polyfills to patch browser incompatibilities.
@@ -80,29 +96,32 @@
           }
         }
 
+        function onProgress(storedContent, percent) {
+          console.log('Stored ' + percent + '%');
+        }
+
         function initPlayer() {
-          // Create a Player instance.
           var video = document.getElementById('video');
           var player = new shaka.Player(video);
 
-//         Attach player to the window to make it easy to access in the JS console.
           window.player = player;
 
-//         Listen for error events.
           player.addEventListener('error', onErrorEvent);
-
-//         Try to load a manifest.
-//         This is an asynchronous process.
+          player.addEventListener('progress', onProgress);
 
           player.load(manifestUri).then(function () {
             // This runs if the asynchronous load is successful.
+            console.log(video);
             console.log('The video has now been loaded!');
           }).catch(onError);  // onError is executed if the asynchronous load fails.
         }
 
         function onErrorEvent(event) {
-          // Extract the shaka.util.Error object from the event.
           onError(event.detail);
+        }
+
+        function onEndEvent(event) {
+          console.log(event);
         }
 
         function onError(error) {
@@ -112,7 +131,11 @@
 
         initApp();
 
-      }
+
+
+    },
+    methods: {
+
     }
   }
 </script>

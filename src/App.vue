@@ -6,35 +6,7 @@
 
 <script>
     export default {
-        name: 'app',
-        data() {
-            return {
-                tokenCSRF: ''
-            }
-        },
-        mounted() {
-            let date = new Date(),
-                plusDay = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 120000)),
-                localDate = localStorage['createDateToken'] || undefined,
-                dateToday = date.getTime(),
-                dateCreate = new Date(localStorage['createDateToken']).getTime();
-
-            console.log("day " + new Date().getDate(), " Hours " + new Date().getHours());
-            console.log("day " + new Date(localDate).getDate(), " Hours " + new Date(localDate).getHours());
-
-
-            if (!localStorage['createDateToken'] || dateToday >= dateCreate) {
-
-              this.$resource('gettokencsrf').get().then((response) => {
-                    localStorage.setItem('createDateToken', plusDay);
-                    localStorage.setItem('tokenCSRF', response.body.tokenCSRF);
-                    console.log(localStorage['tokenCSRF']);
-                }, (response) => {
-                    console.error('error', response);
-                });
-
-            }
-        }
+        name: 'app'
     }
 </script>
 
@@ -45,7 +17,16 @@
     #content {
         padding: 60px 0 20px 0;
     }
+
     /* Content end */
+
+    .text-right {
+      text-align: right;
+    }
+
+    .picker__button--clear, .picker__button--close, .picker__button--today {
+        padding: 0.16em 0 !important;
+    }
 
     .card {
         background: #fff;
