@@ -23,6 +23,7 @@
   import VideoPlayer from './VideoPlayer';
   import flowPlayerCss from '../assets/css/skin.css'
   import miniToastr from 'mini-toastr'
+  import shaka from '../../static/js/shaka-player.compiled.js';
 
   export default {
     name: 'cabinetAdvertiser',
@@ -58,17 +59,19 @@
         dateNow: new Date()
       },
       dataJson = JSON.stringify(data),
+      videoStep = 0,
+      obj;
 
       obj = [
           {
             id: 1,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/XicTds/output878398.mpd"
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/LBcgm7/output576499.mpd"
           },{
-            id: 2,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/YNxdl3/output480454.mpd"
+            id: 4,
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/EuLrGn/output629383.mpd"
           },{
-            id: 3,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/qEKL9l/output506971.mpd"
+            id: 4,
+            mpdOutputFile: "http://test.efflife.kz/mpddirectory/lUUOJg/output969459.mpd"
           }
       ];
 
@@ -79,8 +82,14 @@
         console.error('error', response);
       });
 
+      if(!obj) {
+          miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
+          return false;
+      }
 
-        var manifestUri = "http://test.efflife.kz/mpddirectory/YNxdl3/output480454.mpd";
+
+        let manifestUri = obj[videoStep].mpdOutputFile;
+        let video = document.getElementById('video');
 
         function initApp() {
           // Install built-in polyfills to patch browser incompatibilities.
@@ -96,42 +105,48 @@
           }
         }
 
-        function onProgress(storedContent, percent) {
-          console.log('Stored ' + percent + '%');
+        function nextVideo() {
+          if (videoStep !== obj.length - 1) {
+            videoStep++;
+          } else {
+            videoStep = 0;
+          }
+
+          manifestUri = obj[videoStep].mpdOutputFile;
+          initPlayer();
         }
 
+
+
         function initPlayer() {
-          var video = document.getElementById('video');
+
           var player = new shaka.Player(video);
 
           window.player = player;
 
-          player.addEventListener('error', onErrorEvent);
-          player.addEventListener('progress', onProgress);
+          player.addEventListener('error', nextVideo);
+
+          video.addEventListener('ended', nextVideo);
 
           player.load(manifestUri).then(function () {
             // This runs if the asynchronous load is successful.
-            console.log(video);
             console.log('The video has now been loaded!');
           }).catch(onError);  // onError is executed if the asynchronous load fails.
         }
 
-        function onErrorEvent(event) {
-          onError(event.detail);
-        }
 
-        function onEndEvent(event) {
-          console.log(event);
-        }
 
-        function onError(error) {
-          // Log the error.
-          console.error('Error code', error.code, 'object', error);
-        }
+      function onErrorEvent(event) {
+        // Extract the shaka.util.Error object from the event.
+        onError(event.detail);
+      }
+
+      function onError(error) {
+        // Log the error.
+        console.error('Error code', error.code, 'object', error);
+      }
 
         initApp();
-
-
 
     },
     methods: {
@@ -142,6 +157,10 @@
 
 <style scoped>
   /* Player start */
+
+  .text-right {
+    text-align: right;
+  }
 
   #player {
     max-width: 1280px;

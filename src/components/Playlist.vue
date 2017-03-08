@@ -23,12 +23,18 @@
           v-for="videoFileItem in videoFileList"
           @mouseleave="del = false">
 
-        <!--<img class="playlist-skrin u-pull-left" src="static/img/playlist/skrin.png" alt="skrin">-->
-        <span class="playlist-block-title u-pull-left" @click="linkVideo(videoFileItem.mpdOutputFile); activeVideo = videoFileItem._id">
+        <div class="five columns" :title="videoFileItem.originalFileName" @click="linkVideo(videoFileItem.mpdOutputFile); activeVideo = videoFileItem._id">
+        <img class="playlist-skrin" :src="videoFileItem.linkToPoster" alt="skrin">
+          </div>
+
+        <div class="four columns" @click="linkVideo(videoFileItem.mpdOutputFile); activeVideo = videoFileItem._id">
+        <span class="playlist-block-title" :title="videoFileItem.originalFileName">
                                         <b class="playlist-title">{{videoFileItem.originalFileName}}</b>
                                         <!--<small class="playlist-ip">Zhanalemi</small>-->
                                 </span>
-        <div class="u-pull-right options">
+          </div>
+        <div class="three columns text-right">
+        <div class="options">
           <span v-if="!advertiserAccess">
             <img src="static/img/icons/ic_done_black_16px.svg" @click="videoDoneSend(videoFileItem._id)" v-if="!videoFileItem.statusOfEnableVideo" alt="options">
             <img src="static/img/icons/ic_done_all_black_24px.svg" v-if="videoFileItem.statusOfEnableVideo" alt="options">
@@ -39,6 +45,7 @@
             <strong @click="deleteVideo(videoFileItem._id)"><button>Да</button></strong>
           </span>
         </div>
+          </div>
 
         <div class="u-cf"></div>
       </li>
@@ -451,7 +458,9 @@ Animate the stripes
   }
 
   #playlist .playlists-items .playlists-item {
+    display: table;
     cursor: pointer;
+    height: 70px;
     padding: 0;
     margin: 0;
   }
@@ -487,19 +496,22 @@ Animate the stripes
   }
 
   #playlist .playlists-items .playlists-item .playlist-skrin {
-    height: 80px;
-    width: 80px;
+    display: table-cell;
+    vertical-align: middle;
+    height: auto;
+    width: auto;
+    max-width: 100%;
   }
 
   #playlist .playlists-items .playlists-item .playlist-block-title {
     position: relative;
-    display: inline-block;
-    padding: 20px 5px 20px 20px;
-    width: 160px;
+    display: block;
+    padding: 30px 0 0 0;
+    width: auto;
   }
 
   #playlist .playlists-items .playlists-item .options {
-    padding: 20px 20px 5px 0;
+    padding: 30px 10px 0 0;
     position: relative;
   }
 
@@ -526,6 +538,8 @@ Animate the stripes
 
   #playlist .playlists-items .playlists-item .playlist-title {
     display: block;
+    overflow: hidden;
+    height: 21px;
   }
 
   #playlist .playlists-items .playlists-item .playlist-ip {

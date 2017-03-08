@@ -21,7 +21,7 @@
                   <h5>Описание компании</h5>
                   <p>{{nameOfCompany}}</p>
                   <p>{{addressOfmonitor}}</p>
-                  <p>{{costOfSecond}}</p>
+                  <p>{{totalCost}}</p>
                   <p>График работы экрана: <b>{{graphOfWork}}</b></p>
                 </div>
                 <div class="date four columns">
@@ -52,6 +52,10 @@
   </div>
 </template>
 
+<script src="../../static/js/jquery-1.12.4.min.js"></script>
+<script src="../../static/js/picker.js"></script>
+<script src="../../static/js/picker.date.js"></script>
+
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
@@ -81,7 +85,7 @@
         companyData: [],
         videoMyData: [],
         addressOfmonitor: 'Название компании',
-        costOfSecond: 'Адрес экрана',
+        totalCost: 'Адрес экрана',
         graphOfWork: 'Стоимость за секунду',
         nameOfCompany: '',
         nameMenus: [
@@ -111,7 +115,7 @@
         console.log(response);
 
         this.addressOfmonitor = response.body.resultFromDb.addressOfmonitor;
-        this.costOfSecond = response.body.resultFromDb.costOfSecond.$numberDecimal;
+        this.totalCost = response.body.resultFromDb.totalCost.$numberDecimal;
         this.graphOfWork = response.body.resultFromDb.graphOfWork;
         this.nameOfCompany = response.body.resultFromDb.nameOfCompany;
 
@@ -138,40 +142,19 @@
             videoId: video._id,
             dateOfShowVideo: new Date(this.dateVideo)
           },
-          dataNotification = {
-            tokenCSRF: localStorage['tokenCSRF'],
-            sessionToken: localStorage['sessionToken'],
-            messageOfNotification: 'Новый запрос на рекламоразмещение. \nВидео "' + video.originalFileName + '"',
-            idUserToNotification: this.$route.params.id
-          },
-          dataJson = JSON.stringify(data),
-          dataNotificationJson = JSON.stringify(dataNotification);
+          dataJson = JSON.stringify(data);
+
+        console.log(dataJson);
 
         this.$resource('setnewvideotoscheduling').save({}, dataJson).then((response) => {
           console.log(response);
-          if (response.body.resultFromDb.n === 1) {
+          if (response.body.resultFromDb) {
 //            this.videoClick = video._id;
             let filter = this.videoMyData.filter( (value) => {
                 return video.success = value._id !== video._id;
             });
             this.videoMyData = filter;
-//            let arr = this.videoMyData;
-//            for (let videoId of arr) {
-//              videoId.success = videoId._id === video._id;
-//            }
-//            this.videoMyData = arr;
-//            console.log(this.videoMyData);
-//            this.videoSend();
-
-            this.$resource('addnotification').save({}, dataNotificationJson).then((response) => {
-              console.log(response);
-              this.notificationData = response.body.resultFromDb;
-              miniToastr.warn("Ваша видео отправлено", "Оповещение!", 5000);
-            }, (response) => {
-              miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-              console.error('error', response);
-            });
-
+            miniToastr.success("Ваша видео отправлено.", "Ошибка!", 5000);
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);

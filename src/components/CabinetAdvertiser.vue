@@ -31,6 +31,7 @@
   import VideoPlayer from './VideoPlayer';
   import flowPlayerCss from '../assets/css/skin.css'
   import miniToastr from 'mini-toastr'
+  import shaka from '../../static/js/shaka-player.compiled.js';
 
   export default {
     name: 'cabinetAdvertiser',

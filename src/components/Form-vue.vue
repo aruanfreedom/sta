@@ -110,6 +110,10 @@
   import Bottom from './Bottom';
   import miniToastr from 'mini-toastr'
 
+  import credit from '../../static/js/credit.js';
+
+
+
   export default {
     name: 'login',
     components: {

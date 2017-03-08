@@ -25,7 +25,7 @@
                       <div class="three columns">
                         <span class="select-monitor__name select-monitor__name_status_on">{{companyList.nameOfCompany}}</span>
                         <p class="select-monitor__adress">{{companyList.addressOfmonitor}}</p>
-                        <b class="select-monitor__price">{{companyList.costOfSecond.$numberDecimal}}</b> тг за секунду
+                        <b class="select-monitor__price">{{companyList.costOfSecond}}</b> тг за секунду
                       </div>
                       <div class="four columns">
                         <p class="select-monitor__graph-of-work">
