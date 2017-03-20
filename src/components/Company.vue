@@ -19,9 +19,9 @@
                 </div>
                 <div class="four columns">
                   <h5>Описание компании</h5>
-                  <p>{{nameOfCompany}}</p>
-                  <p>{{addressOfmonitor}}</p>
-                  <p>{{totalCost}}</p>
+                  <p>Имя компании: <b>{{nameOfCompany}}</b></p>
+                  <p>Адрес: <b>{{addressOfmonitor}}</b></p>
+                  <p>Цена за секунду: <b>{{totalCost}}</b></p>
                   <p>График работы экрана: <b>{{graphOfWork}}</b></p>
                 </div>
                 <div class="date four columns">
@@ -32,7 +32,19 @@
 
                     <h3 slot="header">{{titleModal}}</h3>
                     <div class="modal-body" slot="body" >
-                      <span class="video-item" @click="sendScreenHolder(videoItem)" v-for="videoItem in videoMyData">{{videoItem.originalFileName}}</span>
+                      <div class="video-item" @click="sendScreenHolder(videoItem)" v-for="videoItem in videoMyData">
+                          <div class="six columns">
+                          <span class="video-item-title" :title='videoItem.originalFileName'>
+                            <p>{{videoItem.originalFileName}}</p>
+                          </span>
+                          </div>
+                          <div class="six columns">
+                        <div class="pull-right text-right video-price" v-if="videoItem.price">
+                          <b>{{videoItem.price}}</b> тенге
+                        </div> 
+                        </div> 
+
+                      </div>
                     </div>
 
                   </Modal>
@@ -51,10 +63,6 @@
     <Bottom :relativeCls="relativeCls"></Bottom>
   </div>
 </template>
-
-<script src="../../static/js/jquery-1.12.4.min.js"></script>
-<script src="../../static/js/picker.js"></script>
-<script src="../../static/js/picker.date.js"></script>
 
 <script>
   import TopMenu from './TopMenu';
@@ -75,6 +83,8 @@
     data() {
       return {
         notificationData: [],
+        price: '',
+        priceId: '',
         dateVideo: new Date(),
         videoClick: false,
         titleModal: 'Выберите видео',
@@ -135,25 +145,36 @@
           return false;
         }
 
+        let fullDate = new Date(this.dateVideo),
+            newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
+             + ('0' + fullDate.getDate()).slice(-2);
+
+            newDate + "T00:00:00.000Z";
+
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken'],
             userId: this.$route.params.id,
             videoId: video._id,
-            dateOfShowVideo: new Date(this.dateVideo)
+            dateOfShowVideo: new Date(newDate).toISOString() 
           },
           dataJson = JSON.stringify(data);
 
-        console.log(dataJson);
+          console.log(data.dateOfShowVideo);
 
         this.$resource('setnewvideotoscheduling').save({}, dataJson).then((response) => {
           console.log(response);
           if (response.body.resultFromDb) {
-//            this.videoClick = video._id;
-            let filter = this.videoMyData.filter( (value) => {
-                return video.success = value._id !== video._id;
-            });
-            this.videoMyData = filter;
+            let priceArr = [],
+                price = response.body.resultFromDb;
+
+            for (let key of  this.videoMyData) {
+              key.price = (key.price === "" || key._id === video._id) ? price : key.price;
+              priceArr.push(key);
+            }
+            
+            this.videoMyData = priceArr;
+
             miniToastr.success("Ваша видео отправлено.", "Ошибка!", 5000);
           }
         }, (response) => {
@@ -212,6 +233,23 @@
     margin: 10px 0;
     padding: 10px;
     overflow: hidden;
+  }
+  
+  .video-item .video-item-title {
+    display: block;
+    overflow: hidden;
+    height: 25px;
+    width: 100%;
+  }
+  
+  .video-item .video-price b {
+    color: #F44336;
+  }
+
+  .video-item .video-item-title p {
+    display: block;
+    margin: 0;
+    width: 100%;    
   }
 
   .video-item:hover {

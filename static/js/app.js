@@ -3,6 +3,8 @@
 
     window.onload = function() {
 
+        $(".credit").credit();
+
         // var hideOption = function (opt) {
         //   $(opt).parents(".playlists-item").on("mouseleave", function () {
         //     $(opt).hide("slow");

@@ -50,8 +50,30 @@
             </label>
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
-            <label>Адрес экрана <span class="red">&#9913;</span>
-              <input type="text" placeholder="ул. Сыганака, 15" v-model="adressMonitor" class="u-full-width" required>
+            <label>Город<span class="red">&#9913;</span>
+              <select disabled="disabled">
+                <option value="">Выберите город</option>
+                <option value="Астана" selected="selected">Астана</option>
+                <!--<option :value="city.cityName" v-for="city in cityes">{{street.cityName}}</option>-->
+              </select>
+            </label>
+          </div>
+          <div class="form-skl" v-if="role === 'screenHolder'">
+            <label>Улица<span class="red">&#9913;</span>
+              <select v-model="streetAdress" :disabled="streets.length ? false : true ">
+                <option value="">Выберите улицу</option>
+                <option :value="street.streetName" v-for="street in streets">{{street.streetName}}</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-skl" v-if="role === 'screenHolder'">
+            <label>Дом <span class="red">&#9913;</span>
+              <input type="text" placeholder="Номер дома" v-model="home" class="u-full-width" required>
+            </label>
+          </div>
+          <div class="form-skl" v-if="role === 'screenHolder'">
+            <label>Квартира <span class="red">&#9913;</span>
+              <input type="text" placeholder="Номер квартиры" v-model="apartment" class="u-full-width" required>
             </label>
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
@@ -63,14 +85,6 @@
             <label>График работы экрана <span class="red">&#9913;</span><br>
               С <input type="time" v-model="workStart" required>
               До <input type="time" v-model="workEnd" required>
-            </label>
-          </div>
-          <div class="form-skl" v-if="role === 'screenHolder'">
-            <h6 class="red">Укажите реквизиты для принятия оплаты</h6>
-            <label>Номер карточки <span class="red">&#9913;</span>
-              <input type="text" class="credit" placeholder="1234-5678-9012-3456"
-                     v-model="numberCard" required>
-              <small class="error-msg" v-if="isErrorCard">* Не правильный формат</small>
             </label>
           </div>
           <div class="form-skl">
@@ -90,16 +104,16 @@
             <router-link to="/forget">Забыли пароль?</router-link>
           </div>
         </form>
-        <div class="text-center" v-if="role !== 'advertiser' && role !== 'screenHolder'">
+        <!--<div class="text-center" v-if="role !== 'advertiser' && role !== 'screenHolder'">
           <span>Нет учетной записи? Зарегестрируйся</span>
-        </div>
+        </div>-->
       </div>
-      <div class="container" v-if="role !== 'advertiser' && role !== 'screenHolder'">
+     <!-- <div class="container" v-if="role !== 'advertiser' && role !== 'screenHolder'">
         <router-link to="registration" class="u-pull-left button-primary button">Я хочу разместить видео рекламу
         </router-link>
         <router-link to="registration-screen" class="u-pull-right button-primary button">У меня есть экран</router-link>
         <div class="u-cf"></div>
-      </div>
+      </div>-->
 
     </div>
   </div>
@@ -109,10 +123,6 @@
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
   import miniToastr from 'mini-toastr'
-
-  import credit from '../../static/js/credit.js';
-
-
 
   export default {
     name: 'login',
@@ -126,13 +136,6 @@
       'btnSubmitText'
     ],
     watch: {
-      numberCard: function (number) {
-        if (number.length < 19) {
-          this.isErrorCard = true;
-        } else {
-          this.isErrorCard = false;
-        }
-      },
       password: function (val) {
         this.isErrorUser = false;
         if (this.confirmPassword) { // Проверка есть ли проверка пароля, для страницы авторизаций
@@ -154,20 +157,23 @@
     },
     data() {
       return {
+        cityes: [],
+        city: 'Астана',
+        home: '',
+        apartment: '',
         email: localStorage['login'],
+        streets: [],
         password: localStorage['password'],
         nameCompany: '',
         confirmPassword: '',
         saveAuth: localStorage['saveAuth'],
-        adressMonitor: '',
+        streetAdress: '',
         priceSecond: '',
         workStart: '',
         workEnd: '',
-        numberCard: '',
         isErrorPass: false,
         isErrorPassVerify: false,
-        isErrorUser: false,
-        isErrorCard: false
+        isErrorUser: false
       }
     },
     methods: {
@@ -185,7 +191,7 @@
             role: this.role,
             costOfSecond: String(this.priceSecond),
             nameOfCompany: this.nameCompany,
-            addressOfMonitor: this.adressMonitor,
+            addressOfMonitor: `г. ${this.city}, ул. ${this.streetAdress}, дом. ${this.home}, кв. ${this.apartment}`,
             graphOfWork: "с " + this.workStart + " до " + this.workEnd,
             numberOfBankCard: String(this.numberCard)
           };
@@ -193,8 +199,6 @@
         let roleSend = () => {
 
           dataJson = JSON.stringify(regMonitorData);
-
-          console.log(dataJson);
 
           this.$resource('register').save({}, dataJson).then((response) => {
             console.log(response);
@@ -234,10 +238,10 @@
                 this.$router.push('/');
               });
             } else if (response.body.code === 'ok') {
-              localStorage.setItem('role', response.body.role);
               localStorage.setItem('sessionToken', response.body.sessionToken);
               localStorage.setItem('saveAuth', this.saveAuth);
               if(this.saveAuth) {
+                localStorage.setItem('role', response.body.role);
                 localStorage.setItem('login', this.email);
                 localStorage.setItem('password', this.password);
               } else {
@@ -277,19 +281,39 @@
       }
     },
     mounted() {
-      $(".credit").credit();
-      $(".credit-cell").attr("required", "required");
+        if (this.role === 'screenHolder') { // Проверям кто региструется и выводим список улиц если это screenHolder
+          let data = {
+              tokenCSRF: localStorage['tokenCSRF']
+            },
+            dataJson = JSON.stringify(data);
+
+          this.$resource('getstreets').save({}, dataJson).then((response) => {
+            console.log(response);
+            if (response.body.resultFromDb.length) {
+              this.streets = response.body.resultFromDb;
+            } else {
+              miniToastr.info("Список улиц пуст", "Оповещение!", 5000);
+            }
+
+          }, (response) => {
+            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            console.error('error', response);
+          });
+        }
+
+        if (localStorage.role === 'screenHolder') {
+          this.$router.push('/cabinet');
+          console.log(localStorage.role);
+        } else if (localStorage.role === 'advertiser') {
+          this.$router.push('/cabinet-advertiser');
+        }
+
     }
   }
 </script>
 
 <style>
   /* Login start */
-
-  .credit-input .credit-cell {
-    margin-right: 14px;
-    width: 42px;
-  }
 
   .login {
     position: relative;
@@ -324,6 +348,15 @@
     max-width: 300px;
     padding: 20px;
     z-index: 101;
+  }
+
+  select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  select[disabled='disabled'] {
+    background: #dddddd;
   }
 
   .error-reg-msg p {

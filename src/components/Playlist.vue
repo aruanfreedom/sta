@@ -24,7 +24,7 @@
           @mouseleave="del = false">
 
         <div class="five columns" :title="videoFileItem.originalFileName" @click="linkVideo(videoFileItem.mpdOutputFile); activeVideo = videoFileItem._id">
-        <img class="playlist-skrin" :src="videoFileItem.linkToPoster" alt="skrin">
+        <img class="playlist-skrin" @error="videoFileItem.linkToPoster = 'static/img/nophoto.jpg'" :src="videoFileItem.linkToPoster" alt="skrin">
           </div>
 
         <div class="four columns" @click="linkVideo(videoFileItem.mpdOutputFile); activeVideo = videoFileItem._id">
@@ -36,7 +36,7 @@
         <div class="three columns text-right">
         <div class="options">
           <span v-if="!advertiserAccess">
-            <img src="static/img/icons/ic_done_black_16px.svg" @click="videoDoneSend(videoFileItem._id)" v-if="!videoFileItem.statusOfEnableVideo" alt="options">
+            <img src="static/img/icons/ic_done_black_16px.svg" @click="videoDoneSend(videoFileItem)" v-if="!videoFileItem.statusOfEnableVideo" alt="options">
             <img src="static/img/icons/ic_done_all_black_24px.svg" v-if="videoFileItem.statusOfEnableVideo" alt="options">
           </span>
           <img src="static/img/icons/ic_delete_forever_black_24px.svg" alt="options" @click="del = videoFileItem._id">
@@ -82,11 +82,12 @@
 
     },
     methods: {
-      videoDoneSend: function(videoId) {
+      videoDoneSend: function(video) {
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken'],
-            videoSchedullingId: videoId
+            videoSchedullingId: video._id,
+            userId: video.userId
           },
           dataJson = JSON.stringify(data);
 
@@ -112,6 +113,7 @@
           },
           dataJson = JSON.stringify(data);
 
+
         this.$resource('getallvideos').save({}, dataJson).then((response) => {
           console.log(response);
           this.videoFileList = response.body.resultFromDb;
@@ -128,6 +130,7 @@
             sessionToken: localStorage['sessionToken']
           },
           dataJson = JSON.stringify(data);
+          console.log(data)
 
         this.$resource('getallvideoforscreenholder').save({}, dataJson).then((response) => {
           console.log(response);
@@ -458,9 +461,9 @@ Animate the stripes
   }
 
   #playlist .playlists-items .playlists-item {
-    display: table;
     cursor: pointer;
-    height: 70px;
+    height: 80px;
+    overflow: hidden;
     padding: 0;
     margin: 0;
   }
@@ -496,9 +499,9 @@ Animate the stripes
   }
 
   #playlist .playlists-items .playlists-item .playlist-skrin {
-    display: table-cell;
-    vertical-align: middle;
-    height: auto;
+    position: relative;
+    max-height: 80px;
+    height: 100%;
     width: auto;
     max-width: 100%;
   }

@@ -20,7 +20,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import VideoPlayer from './VideoPlayer';
+  import videoOnAir from './videoOnAir';
   import flowPlayerCss from '../assets/css/skin.css'
   import miniToastr from 'mini-toastr'
   import shaka from '../../static/js/shaka-player.compiled.js';
@@ -30,7 +30,7 @@
     components: {
       'TopMenu': TopMenu,
       'Bottom': Bottom,
-      'VideoPlayer': VideoPlayer
+      'VideoPlayer': videoOnAir
     },
     props: ['relativeCls'],
     data() {
@@ -53,42 +53,23 @@
     },
     mounted() {
 
+      let fullDate = new Date(),
+            newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
+             + ('0' + fullDate.getDate()).slice(-2);
+
+            newDate + "T00:00:00.000Z";
+
       let data = {
         tokenCSRF: localStorage['tokenCSRF'],
         sessionToken: localStorage['sessionToken'],
-        dateNow: new Date()
+        dateNow: new Date(newDate).toISOString()
       },
       dataJson = JSON.stringify(data),
       videoStep = 0,
-      obj;
+      videoPlayer = [];
 
-      obj = [
-          {
-            id: 1,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/LBcgm7/output576499.mpd"
-          },{
-            id: 4,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/EuLrGn/output629383.mpd"
-          },{
-            id: 4,
-            mpdOutputFile: "http://test.efflife.kz/mpddirectory/lUUOJg/output969459.mpd"
-          }
-      ];
-
-      this.$resource('getonair').save({}, dataJson).then((response) => {
-        console.log(response);
-      }, (response) => {
-        miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-        console.error('error', response);
-      });
-
-      if(!obj) {
-          miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
-          return false;
-      }
-
-
-        let manifestUri = obj[videoStep].mpdOutputFile;
+      let playlistEmulate = () => {
+        let manifestUri = videoPlayer[videoStep].mpdOutputFile;
         let video = document.getElementById('video');
 
         function initApp() {
@@ -106,13 +87,28 @@
         }
 
         function nextVideo() {
-          if (videoStep !== obj.length - 1) {
+          let data = {
+              tokenCSRF: localStorage['tokenCSRF'],
+              sessionToken: localStorage['sessionToken'],
+              _id: videoPlayer[videoStep]._id
+            },
+            dataJson = JSON.stringify(data);
+          console.log(videoPlayer[videoStep]);
+
+          if (videoStep !== videoPlayer.length - 1) {
             videoStep++;
           } else {
             videoStep = 0;
           }
 
-          manifestUri = obj[videoStep].mpdOutputFile;
+          this.$resource('savecountvideo').save({}, dataJson).then((response) => {
+            console.log(response);
+          }, (response) => {
+            console.error('error', response);
+            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          });
+
+          manifestUri = videoPlayer[videoStep].mpdOutputFile;
           initPlayer();
         }
 
@@ -134,8 +130,6 @@
           }).catch(onError);  // onError is executed if the asynchronous load fails.
         }
 
-
-
       function onErrorEvent(event) {
         // Extract the shaka.util.Error object from the event.
         onError(event.detail);
@@ -147,6 +141,28 @@
       }
 
         initApp();
+      };
+
+      console.log(dataJson);
+
+      this.$resource('getonair').save({}, dataJson).then((response) => {
+        console.log(response);
+        videoPlayer =  response.body.resultFromDb;
+
+        if(!videoPlayer.length) {
+          miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
+          return false;
+        }
+
+        playlistEmulate();
+
+      }, (response) => {
+        miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+        console.error('error', response);
+      });
+
+
+
 
     },
     methods: {

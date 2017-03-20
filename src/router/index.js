@@ -9,14 +9,15 @@ import Cabinet from 'components/CabinetMonitor'
 import CabinetAdvertiser from 'components/CabinetAdvertiser'
 import ListsCompany from 'components/ListsCompany'
 import Company from 'components/Company'
-import Air from 'components/air'
+import Air from 'components/Air'
+import Price from 'components/Price'
 import NotPage from 'components/NotPage'
 
 Vue.use(Router);
 
 export default new Router({
     routes: [{
-        path: '/',
+        path: '/login',
         name: 'Login',
         components: {
             default: Login
@@ -74,6 +75,12 @@ export default new Router({
         name: 'on-air',
         components: {
             default: Air
+        }
+    },{
+        path: '/price',
+        name: 'price',
+        components: {
+            default: Price
         }
     }, {
         path: '*',

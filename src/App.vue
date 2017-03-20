@@ -14,8 +14,13 @@
     /* Element for all page start */
     /* Content start */
 
+    body {
+      min-width: 960px;
+    }
+
     #content {
-        padding: 60px 0 20px 0;
+      padding: 60px 0 20px 0;
+      min-width: 960px;
     }
 
     /* Content end */

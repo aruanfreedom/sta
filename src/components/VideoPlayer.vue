@@ -1,7 +1,6 @@
 <template>
   <div>
     <video id="video"
-           width="640"
            controls
            poster="static/img/poster.jpg"
            autoplay></video>

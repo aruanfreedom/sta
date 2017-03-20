@@ -1,20 +1,37 @@
 <template>
   <!-- Header start -->
-  <div id="header" class="u-full-width" @mouseleave="alertFadeOut = false">
+  <div id="header" class="u-full-width" @mouseleave="alertFadeOut = false; alertProfile = false;">
     <div class="row max-center">
       <ul>
         <li id="logo" class="u-pull-left"><a href="/#">logo</a></li>
         <li class="u-pull-left" v-for="nameMenu in nameMenus">
           <a :href="nameMenu.link">{{nameMenu.name}}</a>
         </li>
-        <li class="u-pull-right" v-if="notificationShow">
-          <a href="#" @click.prevent="exit"><img src="static/img/icons/ic_exit_to_app_white_24px.svg" alt=""></a>
+        <li class="parent-menu u-pull-right" v-if="notificationShow">
+          <a href="#" @click.prevent="alertProfile = true; alertFadeOut = false;"><img src="static/img/icons/ic_account_circle_white_36px.svg"
+                                                                 alt=""></a>
+          <div class="menu-block micro-block" v-if="alertProfile">
+            <router-link class="menu-item" :to="{name: 'price'}" v-if="roleLocal === 'screenHolder'">
+              <div class="row">
+                <div class="twelve columns">
+                  <p class="icon-price">Выплата</p>
+                </div>
+              </div>
+            </router-link>
+            <div class="menu-item" @click="exit">
+              <div class="row">
+                <div class="twelve columns">
+                  <p class="icon-exit">Выход</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </li>
         <li id="info-icon" class="u-pull-right">
           <a href="#"><img src="static/img/icons/ic_info_outline_white_24px.svg" alt=""></a>
         </li>
-        <li id="notification" class="u-pull-right" v-if="notificationShow">
-          <a href="#" @click.prevent="alertFadeOut = true; notificationValidate()">
+        <li class="parent-menu u-pull-right" v-if="notificationShow">
+          <a href="#" @click.prevent="alertFadeOut = true; alertProfile = false; notificationValidate()">
             <img id="notification-icon"
                  src="static/img/icons/ic_notifications_none_white_24px.svg"
                  alt="">
@@ -22,23 +39,24 @@
               {{readings.length}}
             </span>
           </a>
-          <div class="notification-block" v-if="alertFadeOut">
-            <div class="notfication-item" v-if="!notificationDataAccess.length">
+          <div class="menu-block" v-if="alertFadeOut">
+            <div class="menu-item" v-if="!notificationDataAccess.length">
               <div class="row">
                 <div class="twelve columns">
-                  <p class="notification-des">Новых уведомлении нет</p>
+                  <p>Новых уведомлении нет</p>
                 </div>
               </div>
             </div>
-            <div class="notfication-item" v-for="notificationItem in notificationDataAccess">
+            <div class="menu-item" v-for="notificationItem in notificationDataAccess">
               <div class="row">
                 <div class="four columns">
                   <!--<img class="notification-img" src="static/img/playlist/skrin.png" alt="delete">-->
                   <h4>{{notificationItem.nameOfFromCompany}}</h4>
                 </div>
                 <div class="eight columns">
-                  <p class="notification-des">{{notificationItem.messageOfNotification}}</p>
-                  <a v-if="notificationItem.linkPay" :href="notificationItem.linkPay" class="linkPay u-pull-right" target="_blank">Оплата</a>
+                  <p class="menu-des">{{notificationItem.messageOfNotification}}</p>
+                  <a v-if="notificationItem.linkPay" :href="notificationItem.linkPay" class="linkPay u-pull-right"
+                     target="_blank">Оплата</a>
                   <small class="notification-date u-pull-right">{{notificationItem.dateOfNotification}}</small>
                 </div>
               </div>
@@ -59,7 +77,9 @@
     props: ['notification', 'nameLink', 'notificationData'],
     data() {
       return {
+        roleLocal: localStorage.role || false,
         alertFadeOut: false,
+        alertProfile: false,
         nameMenus: this.nameLink || [],
         notificationShow: this.notification || false,
         notificationDataAccess: this.notificationData || [],
@@ -86,11 +106,13 @@
 
       }
 
-      this.notificationSend();
+      if (this.notificationShow) {
+        this.notificationSend();
+      }
 
     },
     methods: {
-      notificationSend: function() {
+      notificationSend: function () {
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken']
@@ -102,7 +124,7 @@
           console.log(response);
           if (response.body.resultFromDb.length) {
             this.notificationDataAccess = response.body.resultFromDb;
-            readings = this.notificationDataAccess.filter( (read) => {
+            readings = this.notificationDataAccess.filter((read) => {
               return !read.statusRead;
             });
             this.readings = readings;
@@ -112,7 +134,7 @@
           console.error('error', response);
         });
       },
-      notificationValidate: function() {
+      notificationValidate: function () {
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken']
@@ -121,8 +143,8 @@
 
         this.$resource('updatestatusnotification').save({}, dataJson).then((response) => {
           console.log(response);
-          let readings = this.notificationDataAccess.filter( (read) => {
-              return !read.statusRead;
+          let readings = this.notificationDataAccess.filter((read) => {
+            return !read.statusRead;
           });
           this.readings = readings;
           this.notificationSend();
@@ -133,12 +155,15 @@
       },
       exit: function () {
 
-        if (localStorage['saveAuth'] === 'false') {
+        if (localStorage.saveAuth === 'false') {
           console.log('clear');
           this.exitVisible = false;
           localStorage.clear();
         }
-        this.$router.push('/');
+        // Удаляем роль чтобы функцию проверка роли
+        // на авторизаций не перекидывало по кабинетам
+        delete localStorage.role;
+        this.$router.push('/login');
       }
     }
   }
@@ -147,19 +172,20 @@
 <style scoped>
   /* header start */
 
-  #header ul {
-    padding: 0;
-    margin: 0;
-  }
-
   #header {
     background: #4285f4;
     padding: 10px 20px;
     box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
-    position: fixed;
+    position: absolute;
     top: 0;
     height: 60px;
     z-index: 100;
+    min-width: 960px;
+  }
+
+  #header ul {
+    padding: 0;
+    margin: 0;
   }
 
   .linkPay:hover {
@@ -198,11 +224,11 @@
     list-style: none;
   }
 
-  #header #notification {
+  #header .parent-menu {
     position: relative;
   }
 
-  #header #notification .notification-count {
+  #header .parent-menu .notification-count {
     background: #F44336;
     border-radius: 50%;
     color: #fff;
@@ -212,17 +238,17 @@
     padding: 10px 18px;
   }
 
-  #notification {
+  .parent-menu {
     position: relative;
   }
 
-  #notification .notification-block {
+  .parent-menu .menu-block {
     /*display: none;*/
     background: #fff;
     position: absolute;
     border-radius: 2px;
     max-height: 450px;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     right: -45px;
     top: 50px;
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -231,7 +257,7 @@
     width: 380px;
   }
 
-  #notification .notification-block:before {
+  .parent-menu .menu-block:before {
     content: "";
     position: absolute;
     right: 48px;
@@ -240,15 +266,51 @@
     border-bottom: 15px solid #fff;
   }
 
-  #notification .notfication-item {
+  .parent-menu .menu-block.micro-block:before {
+    content: "";
+    position: absolute;
+    right: 21px;
+  }
+
+  .parent-menu .menu-item {
+    display: block;
+    color: #000;
     cursor: pointer;
     padding: 20px;
     border-bottom: 2px solid #f7f7f7;
   }
 
-  #notification .notification-item:hover {
+  .parent-menu .menu-item:hover {
     background-color: #e5e5e5;
     background-color: rgba(158, 158, 158, 0.2);
+  }
+
+  .icon-exit {
+    background: url("../../static/img/icons/ic_exit_to_app_white_24px.svg") no-repeat left center;
+    padding-left: 30px;
+  }
+
+  .icon-price {
+    background: url("../../static/img/icons/ic_attach_money_black_36px.svg") no-repeat left center;
+    padding-left: 30px;
+  }
+
+  .parent-menu .menu-block.micro-block {
+    right: -20px;
+    width: auto;
+  }
+
+  .parent-menu .menu-block.micro-block .menu-item {
+    display: block;
+    padding: 10px 20px !important;
+  }
+
+  .parent-menu .menu-block .menu-item p {
+    margin: 0;
+  }
+
+  .parent-menu .menu-block .menu-item .menu-des {
+    margin-bottom: 2rem;
   }
 
   /* Header end */
