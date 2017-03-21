@@ -59,6 +59,22 @@
 
             newDate + "T00:00:00.000Z";
 
+      let sendEndVideo = (id) => {
+        let data = {
+              tokenCSRF: localStorage['tokenCSRF'],
+              sessionToken: localStorage['sessionToken'],
+              _id: id
+            },
+            dataJson = JSON.stringify(data);
+          console.log(data);
+        this.$resource('savecountvideo').save({}, dataJson).then((response) => {
+            console.log(response);
+          }, (response) => {
+            console.error('error', response);
+            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          });
+      }
+
       let data = {
         tokenCSRF: localStorage['tokenCSRF'],
         sessionToken: localStorage['sessionToken'],
@@ -87,13 +103,6 @@
         }
 
         function nextVideo() {
-          let data = {
-              tokenCSRF: localStorage['tokenCSRF'],
-              sessionToken: localStorage['sessionToken'],
-              _id: videoPlayer[videoStep]._id
-            },
-            dataJson = JSON.stringify(data);
-          console.log(videoPlayer[videoStep]);
 
           if (videoStep !== videoPlayer.length - 1) {
             videoStep++;
@@ -101,12 +110,7 @@
             videoStep = 0;
           }
 
-          this.$resource('savecountvideo').save({}, dataJson).then((response) => {
-            console.log(response);
-          }, (response) => {
-            console.error('error', response);
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          });
+          sendEndVideo(videoPlayer[videoStep]._id);
 
           manifestUri = videoPlayer[videoStep].mpdOutputFile;
           initPlayer();

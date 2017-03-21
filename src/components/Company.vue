@@ -11,53 +11,57 @@
         <div class="row">
           <div class="twelve columns">
             <div class="company-description card">
-              <div class="row">
-                <div class="four columns">
-                  <div class="company-skrin">
-                    <img src="static/img/company_0.jpg" alt="skrin">
-                  </div>
-                </div>
-                <div class="four columns">
-                  <h5>Описание компании</h5>
-                  <p>Имя компании: <b>{{nameOfCompany}}</b></p>
-                  <p>Адрес: <b>{{addressOfmonitor}}</b></p>
-                  <p>Цена за секунду: <b>{{totalCost}}</b></p>
-                  <p>График работы экрана: <b>{{graphOfWork}}</b></p>
-                </div>
-                <div class="date four columns">
-                  <label>Выберите дату размещение</label>
-                  <input type="text" class="datepicker u-full-width">
-                  <button @click="videoSend(); showModal = true" class="button button-primary">Отправить видеорекламу</button>
-                  <Modal v-if="showModal" @close="showModal = false">
+              <h5>Информация о компании</h5>
+              <table class="u-full-width">
+                <thead>
+                <tr>
+                  <th>Имя компании</th>
+                  <th>Адрес</th>
+                  <th>Цена за секунду</th>
+                  <th>График работы экрана</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>{{nameOfCompany}}</td>
+                  <td>{{addressOfmonitor}}</td>
+                  <td>{{totalCost}}</td>
+                  <td>{{graphOfWork}}</td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="date">
+                <Modal v-if="showModal" @close="showModal = false">
 
-                    <h3 slot="header">{{titleModal}}</h3>
-                    <div class="modal-body" slot="body" >
-                      <div class="video-item" @click="sendScreenHolder(videoItem)" v-for="videoItem in videoMyData">
-                          <div class="six columns">
+                  <h3 slot="header">{{titleModal}}</h3>
+                  <small class="info-date" slot="date">{{dateVideo | date}}</small>
+                  <div class="modal-body" slot="body" >
+                    <div class="video-item" @click="sendScreenHolder(videoItem)" v-for="videoItem in videoMyData">
+                      <div class="six columns">
                           <span class="video-item-title" :title='videoItem.originalFileName'>
                             <p>{{videoItem.originalFileName}}</p>
                           </span>
-                          </div>
-                          <div class="six columns">
+                      </div>
+                      <div class="six columns">
                         <div class="pull-right text-right video-price" v-if="videoItem.price">
                           <b>{{videoItem.price}}</b> тенге
-                        </div> 
-                        </div> 
-
+                        </div>
                       </div>
-                    </div>
 
-                  </Modal>
-                </div>
+                    </div>
+                  </div>
+
+                </Modal>
               </div>
+              <div id='calendar'></div>
             </div>
 
           </div>
         </div>
       </div>
       <!-- Select end -->
-
     </div>
+
 
 
     <Bottom :relativeCls="relativeCls"></Bottom>
@@ -69,9 +73,7 @@
   import Bottom from './Bottom';
   import miniToastr from 'mini-toastr'
   import Modal from './Modal'
-  import dateCssModal from '../assets/css/default.css'
-  import dateCss from '../assets/css/default.date.css'
-  import lang from '../assets/css/rtl.css'
+  import calendarCss from '../assets/css/fullcalendar.css'
 
   export default {
     name: 'listsCompany',
@@ -80,16 +82,22 @@
       Bottom: Bottom,
       Modal: Modal
     },
+    filters: {
+      date(data) {
+        return moment(data).format('YYYY-MM-DD');
+      }
+    },
     data() {
       return {
         notificationData: [],
+        infoCalendar: [],
         price: '',
         priceId: '',
         dateVideo: new Date(),
         videoClick: false,
         titleModal: 'Выберите видео',
         showModal: false,
-        relativeCls: false,
+        relativeCls: true,
         iconVisible: true,
         notification: true,
         companyData: [],
@@ -111,15 +119,66 @@
     },
     mounted() {
 
-      $(this.$el).find('.datepicker').pickadate({
-        clear: '',
-        formatSubmit: 'yyyy/mm/dd',
-        format: 'dd/mm/yyyy',
-        hiddenName: false,
-        onClose: function () {
-          this.showModal = true;
+      let modalCall = (date) => {
+        console.log(date)
+        this.videoSend(); 
+        this.showModal = true;
+        this.dateVideo = date || false;
+      },
+      data = {
+        tokenCSRF: localStorage['tokenCSRF'],
+        sessionToken: localStorage['sessionToken'],
+        userId: this.$route.params.id
+      },
+      dataJson = JSON.stringify(data),
+      infoCalendar = [];
+
+      let updateCalendar = (info) => {
+        let infoVideos = info || [];
+        
+        if(infoVideos) {
+          for(let infoItem of info) {
+            infoCalendar.push(
+              {
+                title: `Имя - ${infoItem.originalFileName} 
+                        Показы - ${infoItem.statusOfPlayToEnd} 
+                        Цена - ${infoItem.amountResult.$numberDecimal}`,
+                start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
+              }
+            );
+          }
+        } else {
+          return false;
         }
-      });
+      }
+
+      $('#calendar').fullCalendar({
+          // enable theme
+          theme: true,
+          businessHours: true,
+
+          dayClick: function(date) {            
+            modalCall(date.format());
+          },
+          eventClick: function(event, jsEvent, view) {
+            console.info(event.start._d)
+            let date = moment(event.start._d).format();
+            modalCall(date);
+          },
+          events: infoCalendar
+        });
+
+      // Вызов всех видео информации для каленьдарья
+        this.$resource('getallvideoforadvertiser').save({}, dataJson).then((response) => {
+          console.log(response);
+            this.infoCalendar = [];
+            this.infoCalendar = response.body.resultFromDb;
+            updateCalendar(this.infoCalendar);
+        }, (response) => {
+          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          console.error('error', response);
+        });
+      
 
       this.$resource('getonecompany?id={id}').get({id: this.$route.params.id}).then((response) => {
         console.log(response);
@@ -137,14 +196,7 @@
     },
     methods: {
       sendScreenHolder: function(video) {
-
-        this.dateVideo = $(this.$el).find('.date input[type="hidden"]').val();
-
-        if(!this.dateVideo) {
-          miniToastr.error("Вы не выбрали дату размещение", "Ошибка!", 5000);
-          return false;
-        }
-
+ 
         let fullDate = new Date(this.dateVideo),
             newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
              + ('0' + fullDate.getDate()).slice(-2);
@@ -156,7 +208,7 @@
             sessionToken: localStorage['sessionToken'],
             userId: this.$route.params.id,
             videoId: video._id,
-            dateOfShowVideo: new Date(newDate).toISOString() 
+            dateOfShowVideo: new Date(newDate).toISOString()
           },
           dataJson = JSON.stringify(data);
 
@@ -172,10 +224,10 @@
               key.price = (key.price === "" || key._id === video._id) ? price : key.price;
               priceArr.push(key);
             }
-            
+
             this.videoMyData = priceArr;
 
-            miniToastr.success("Ваша видео отправлено.", "Ошибка!", 5000);
+            miniToastr.success("Ваша видео отправлено.", "Оповещение", 5000);
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
@@ -204,7 +256,27 @@
   }
 </script>
 
-<style scoped>
+<style>
+
+  .fc-time {
+    display: none;
+  }
+
+  .ui-icon-circle-triangle-w {
+    background: url('../../static/img/icons/ic_keyboard_arrow_left_black_18px.svg') no-repeat center center;
+    position: relative;
+    display: block;
+    height: 18px;
+    width: 10px;
+  }
+
+  .ui-icon-circle-triangle-e {
+    background: url('../../static/img/icons/ic_keyboard_arrow_right_black_18px.svg') no-repeat center center;
+    position: relative;
+    display: block;
+    height: 18px;
+    width: 10px;
+  }
 
   #select-company {
     max-width: 1280px;
@@ -234,14 +306,14 @@
     padding: 10px;
     overflow: hidden;
   }
-  
+
   .video-item .video-item-title {
     display: block;
     overflow: hidden;
     height: 25px;
     width: 100%;
   }
-  
+
   .video-item .video-price b {
     color: #F44336;
   }
@@ -249,7 +321,7 @@
   .video-item .video-item-title p {
     display: block;
     margin: 0;
-    width: 100%;    
+    width: 100%;
   }
 
   .video-item:hover {

@@ -524,8 +524,8 @@ Animate the stripes
     background: #fff;
     color: #000;
     position: absolute;
-    padding: 20px 10px 10px 10px;
-    top: 7px;
+    padding: 10px 10px 0px 10px;
+    top: 9px;
     right: 15px;
     width: 160px;
   }

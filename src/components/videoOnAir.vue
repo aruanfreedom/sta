@@ -1,5 +1,5 @@
 <template>
-  <div class="video-container">
+  <div class="video-container one-air-video">
     <video id="video"
            poster="static/img/poster.jpg"
            autoplay></video>
@@ -51,7 +51,7 @@
     background: #fff;
     position: absolute;
     right: 2%;
-    bottom: 0px;
+    top: 0px;
     // z-index: 11111111111;
   }
 
@@ -59,7 +59,7 @@
     width: 100%;
   }
 
-  video::-webkit-media-controls {
+  .one-air-video video::-webkit-media-controls {
     display:none !important;
   }
 

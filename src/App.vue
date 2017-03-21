@@ -14,6 +14,14 @@
     /* Element for all page start */
     /* Content start */
 
+    .mini-toastr {
+        position: fixed;
+        bottom: 50px;
+        left: 12px;
+        right: auto !important;
+        top: auto !important;
+    }
+
     body {
       min-width: 960px;
     }

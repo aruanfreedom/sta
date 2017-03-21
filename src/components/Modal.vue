@@ -8,6 +8,9 @@
             <slot name="header">
               default header
             </slot>
+            <slot name="date">
+              default date
+            </slot>
           </div>
 
           <div class="modal-body">
@@ -36,7 +39,14 @@
   }
 </script>
 
-<style scoped>
+<style>
+
+  .info-date{
+      position: absolute;
+      right: 30px;
+      color: #ccc;
+      top: 10px;
+  }
 
   img {
     max-width: 100%;
@@ -61,6 +71,7 @@
 
   .modal-container {
     width: auto;
+    position: relative;
     max-width: 300px;
     margin: 0px auto;
     padding: 20px 30px;
@@ -73,7 +84,7 @@
 
   .modal-header h3 {
     margin-top: 0;
-    color: #42b983;
+    color: #000;
   }
 
   .modal-body {

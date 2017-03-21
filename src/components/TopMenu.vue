@@ -31,7 +31,7 @@
           <a href="#"><img src="static/img/icons/ic_info_outline_white_24px.svg" alt=""></a>
         </li>
         <li class="parent-menu u-pull-right" v-if="notificationShow">
-          <a href="#" @click.prevent="alertFadeOut = true; alertProfile = false; notificationValidate()">
+          <a href="#" @click.prevent="alertFadeOut = true; alertProfile = false;">
             <img id="notification-icon"
                  src="static/img/icons/ic_notifications_none_white_24px.svg"
                  alt="">
@@ -47,6 +47,11 @@
                 </div>
               </div>
             </div>
+            <div class="menu-item-scroll" v-if="notificationDataAccess.length">
+            <div class="clear-notification">
+              <div class="u-pull-left">Уведомление</div>
+              <a href="#" @click.prevent="readingsAll">Отметить все как прочитанные</a>
+            </div>
             <div class="menu-item" v-for="notificationItem in notificationDataAccess">
               <div class="row">
                 <div class="four columns">
@@ -55,11 +60,13 @@
                 </div>
                 <div class="eight columns">
                   <p class="menu-des">{{notificationItem.messageOfNotification}}</p>
-                  <a v-if="notificationItem.linkPay" :href="notificationItem.linkPay" class="linkPay u-pull-right"
-                     target="_blank">Оплата</a>
-                  <small class="notification-date u-pull-right">{{notificationItem.dateOfNotification}}</small>
+                  <small class="notification-date">{{notificationItem.dateOfNotification | date}}</small>
+                  <div class="text-right">
+                    <a v-if="notificationItem.linkPay" :href="notificationItem.linkPay" class="linkPay" target="_blank">Оплата</a>
+                  </div>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </li>
@@ -111,8 +118,29 @@
       }
 
     },
+    filters: {
+            date(data) {
+                return moment(data).format('YYYY-MM-DD');
+            }
+        },
     methods: {
-      notificationSend: function () {
+      readingsAll() {
+        let data = {
+            tokenCSRF: localStorage['tokenCSRF'],
+            sessionToken: localStorage['sessionToken']
+          },
+          dataJson = JSON.stringify(data);
+
+        this.$resource('updatestatusnotification').save({}, dataJson).then((response) => {
+           this.readings = [];
+           this.notificationDataAccess = [];
+           this.notificationSend();
+        }, (response) => {
+          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          console.error('error', response);
+        });
+      },
+      notificationSend() {
         let data = {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken']
@@ -134,26 +162,7 @@
           console.error('error', response);
         });
       },
-      notificationValidate: function () {
-        let data = {
-            tokenCSRF: localStorage['tokenCSRF'],
-            sessionToken: localStorage['sessionToken']
-          },
-          dataJson = JSON.stringify(data);
-
-        this.$resource('updatestatusnotification').save({}, dataJson).then((response) => {
-          console.log(response);
-          let readings = this.notificationDataAccess.filter((read) => {
-            return !read.statusRead;
-          });
-          this.readings = readings;
-          this.notificationSend();
-        }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
-        });
-      },
-      exit: function () {
+      exit() {
 
         if (localStorage.saveAuth === 'false') {
           console.log('clear');
@@ -186,6 +195,23 @@
   #header ul {
     padding: 0;
     margin: 0;
+  }
+
+  .menu-item-scroll {
+    overflow-y: auto;
+    max-height: 420px;
+  }
+
+  .notification-date {
+    display: block;
+    text-align: right;
+  }
+
+  .clear-notification {
+    display: block;
+    text-align: right;
+    padding: 10px;
+    font-weight: bold;
   }
 
   .linkPay:hover {
