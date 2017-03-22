@@ -6,7 +6,7 @@
       <div class="login">
         <div class="login-card">
           <h4 class="text-center">Вывести деньги</h4>
-          <form action="/resetpass" @submit.prevent="auth" class="card">
+          <form action="/paysendreq" @submit.prevent="priceSend" class="card">
             <div class="form-skl credit-input">
               <label>Номер карточки
                 <input type="text" class="credit" placeholder="1234-5678-9012-3456"
@@ -46,6 +46,42 @@
         }
       }
     },
+    methods: {
+        priceSend() {
+          let inputsValue = $('.credit-input input').val(),
+              data = {
+                tokenCSRF: localStorage['tokenCSRF'],
+                sessionToken: localStorage['sessionToken'],
+                cardNumber: inputsValue
+              },
+              dataJson = JSON.stringify(data);
+        
+        if (inputsValue.length < 16) {
+          this.isErrorCard = true;
+          return false;
+        }
+
+        this.isErrorCard = false;
+
+        this.$resource('paysendreq').save({}, dataJson).then((response) => {
+          console.log(response);
+          if (response.body.code === "ok") {
+              if (localStorage.role === 'screenHolder') { // Проверяем кто зашел и куда его перекинуть если он был авторизован
+                this.$router.push('/cabinet');
+                console.log(localStorage.role);
+              } else if (localStorage.role === 'advertiser') {
+                this.$router.push('/cabinet-advertiser');
+              }
+          } else {
+            miniToastr.error("Платежная система не разрешена для магазина");
+          }
+        }, (response) => {
+          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          console.error('error', response);
+        });
+
+        }
+    },
     props: ['relativeCls'],
     data() {
       return {
@@ -54,7 +90,6 @@
         relative: this.relativeCls,
         advertiser: false,
         notification: true,
-        playlistTitle: 'Предлогаемые',
         iconVisible: false,
         nameMenus: [
           {
@@ -69,6 +104,7 @@
     },
     mounted() {
       $(".credit").credit();
+      $('.credit-input input').attr("required", "required")
     }
   }
 </script>

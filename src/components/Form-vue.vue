@@ -301,7 +301,7 @@
           });
         }
 
-        if (localStorage.role === 'screenHolder') {
+        if (localStorage.role === 'screenHolder') { // Проверяем кто зашел и куда его перекинуть если он был авторизован
           this.$router.push('/cabinet');
           console.log(localStorage.role);
         } else if (localStorage.role === 'advertiser') {
