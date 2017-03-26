@@ -92,14 +92,13 @@
           dataJson = JSON.stringify(data);
 
         this.$resource('enableoneschedullingvideo').save({}, dataJson).then((response) => {
-          console.log(response);
+
           if (response.body.code === "ok") {
-              console.log('ok');
               this.screenHolderFunc();
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
       },
@@ -115,12 +114,12 @@
 
 
         this.$resource('getallvideos').save({}, dataJson).then((response) => {
-          console.log(response);
+
           this.videoFileList = response.body.resultFromDb;
 //          this.videoFileList.reverse();
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
       },
@@ -130,15 +129,14 @@
             sessionToken: localStorage['sessionToken']
           },
           dataJson = JSON.stringify(data);
-          console.log(data)
 
         this.$resource('getallvideoforscreenholder').save({}, dataJson).then((response) => {
-          console.log(response);
+
           this.videoFileList = response.body.resultFromDb;
 //          this.videoFileList.reverse();
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
       },
@@ -153,8 +151,6 @@
         }
 
         this.progressNumber = file[0].size;
-
-        console.log(file[0].size);
 
         let progressStart = 100000000 / file[0].size,
             progressSumma = (Math.ceil(file[0].size) / 1000000 <= 10) ? 2 : 5,
@@ -182,8 +178,7 @@
           },
           progress: progress
         }).save({}, formData).then((response) => {
-          console.log("Первое обращение partFile");
-          console.log(response);
+
 
           if(response.body.code === 'lengthVideoError') {
             miniToastr.error("Не правильный формат видео", "Ошибка!", 5000);
@@ -205,8 +200,7 @@
               },
               progress: progress
             }).save({}, formData).then((response) => {
-              console.log("Второе обращение fullFile");
-              console.log(response);
+
               if (response.body.code === 0) {
                 this.advertiserFunc();
                 miniToastr.success("Загрузка видео успешно завершена", "Оповещение", 5000);
@@ -215,21 +209,20 @@
               }
             }, (response) => {
               this.procentLoading = 0;
-              console.error('error', response);
+
               miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
             });
           }
 
         }, (response) => {
           this.procentLoading = 0;
-          console.error('error', response);
+
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
         });
       },
       deleteVideo: function (videoId) {
           let videoID = videoId || false;
           if(!videoID) {
-              console.error('Нет id видео');
               return false;
           }
           let dataAdvertiser = {
@@ -247,7 +240,7 @@
 
         if (this.advertiserAccess) { // Если это ипешник
           this.$resource('deleteonevideo').save({}, dataJsonAdvertiser).then((response) => {
-            console.log(response);
+
           if(response.body.resultFromDb.n === 1) {
             miniToastr.info("Видео успешно удалено", "Оповещение", 5000);
             let deleteArr = this.videoFileList.filter(function (video) {
@@ -259,11 +252,11 @@
           }
         }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
         } else { // Или экрана-владелец
           this.$resource('deleteoneschedullingvideo').save({}, dataJsonScreenHolder).then((response) => {
-            console.log(response);
+
           if(response.body.resultFromDb.n === 1) {
             miniToastr.info("Видео успешно удалено", "Оповещение", 5000);
             let deleteArr = this.videoFileList.filter(function (video) {
@@ -275,7 +268,7 @@
           }
         }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
         }
       },

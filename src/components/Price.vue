@@ -55,7 +55,7 @@
                 cardNumber: inputsValue
               },
               dataJson = JSON.stringify(data);
-        
+
         if (inputsValue.length < 16) {
           this.isErrorCard = true;
           return false;
@@ -64,20 +64,20 @@
         this.isErrorCard = false;
 
         this.$resource('paysendreq').save({}, dataJson).then((response) => {
-          console.log(response);
+
           if (response.body.code === "ok") {
               if (localStorage.role === 'screenHolder') { // Проверяем кто зашел и куда его перекинуть если он был авторизован
                 this.$router.push('/cabinet');
-                console.log(localStorage.role);
               } else if (localStorage.role === 'advertiser') {
                 this.$router.push('/cabinet-advertiser');
               }
+              miniToastr.success("Ваши данные отправлены");
           } else {
             miniToastr.error("Платежная система не разрешена для магазина");
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
         }

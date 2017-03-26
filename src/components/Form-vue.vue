@@ -60,9 +60,10 @@
           </div>
           <div class="form-skl" v-if="role === 'screenHolder'">
             <label>Улица<span class="red">&#9913;</span>
-              <select v-model="streetAdress" :disabled="streets.length ? false : true ">
+              <input id="clickme" type="text" class="filter u-full-width" v-model="streetAdressFilter" :placeholder="streetAdress">
+              <select id="choose" v-model="streetAdress" :disabled="streets.length ? false : true " style="display:none;">
                 <option value="">Выберите улицу</option>
-                <option :value="street.streetName" v-for="street in streets">{{street.streetName}}</option>
+                <option :value="street.streetName" v-for="street in filteredItems">{{street.streetName}}</option>
               </select>
             </label>
           </div>
@@ -71,11 +72,11 @@
               <input type="text" placeholder="Номер дома" v-model="home" class="u-full-width" required>
             </label>
           </div>
-          <div class="form-skl" v-if="role === 'screenHolder'">
+          <!--<div class="form-skl" v-if="role === 'screenHolder'">
             <label>Квартира <span class="red">&#9913;</span>
               <input type="text" placeholder="Номер квартиры" v-model="apartment" class="u-full-width" required>
             </label>
-          </div>
+          </div>-->
           <div class="form-skl" v-if="role === 'screenHolder'">
             <label>Стоимость за секунду (тг) <span class="red">&#9913;</span>
               <input type="number" placeholder="50" v-model="priceSecond" class="u-full-width" required>
@@ -157,6 +158,9 @@
     },
     data() {
       return {
+        streetAdressFilter: "",
+        value: null,
+        options: ['list', 'of', 'options'],
         cityes: [],
         city: 'Астана',
         home: '',
@@ -176,6 +180,13 @@
         isErrorUser: false
       }
     },
+    computed: {
+    filteredItems() {
+        return this.streets.filter(street => {
+          return street.streetName.indexOf(this.streetAdressFilter.toLowerCase()) > -1
+        })
+      }
+    },
     methods: {
       auth: function () {
         let dataJson,
@@ -190,7 +201,7 @@
             pass: this.password,
             role: this.role,
             costOfSecond: String(this.priceSecond),
-            nameOfCompany: this.nameCompany,
+            // nameOfCompany: this.nameCompany,
             addressOfMonitor: `г. ${this.city}, ул. ${this.streetAdress}, дом. ${this.home}, кв. ${this.apartment}`,
             graphOfWork: "с " + this.workStart + " до " + this.workEnd,
             numberOfBankCard: String(this.numberCard)
@@ -201,7 +212,7 @@
           dataJson = JSON.stringify(regMonitorData);
 
           this.$resource('register').save({}, dataJson).then((response) => {
-            console.log(response);
+
             if (response.body.resultFromDb.n === 1) {
               miniToastr.warn("Пожалуйста активируйте почту!", "Оповещение", 8000, () => {
                 this.$router.push('/login');
@@ -216,15 +227,14 @@
             }
           }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
         };
 
         let loginSend = () => {
           dataJson = JSON.stringify(loginData);
-          console.log(dataJson);
           this.$resource('login').save({}, dataJson).then((response) => {
-            console.log(response);
+
             if (response.body.code === 'activateEmailError') {
               miniToastr.error("Пожалуйста активируйте почту!", "Ошибка!", 5000);
             } else if (response.body.code === 'userNotFound') {
@@ -258,7 +268,7 @@
 
           }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
 
         };
@@ -288,7 +298,6 @@
             dataJson = JSON.stringify(data);
 
           this.$resource('getstreets').save({}, dataJson).then((response) => {
-            console.log(response);
             if (response.body.resultFromDb.length) {
               this.streets = response.body.resultFromDb;
             } else {
@@ -297,16 +306,25 @@
 
           }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
         }
 
         if (localStorage.role === 'screenHolder') { // Проверяем кто зашел и куда его перекинуть если он был авторизован
           this.$router.push('/cabinet');
-          console.log(localStorage.role);
         } else if (localStorage.role === 'advertiser') {
           this.$router.push('/cabinet-advertiser');
         }
+
+        $("#clickme").on("click",function(){
+          var se=$("#choose");
+          se.show();
+          se[0].size=2;
+        });
+        $("#choose").on("click",function(){
+          var se=$(this);
+          se.hide();
+        });
 
     }
   }
@@ -314,6 +332,10 @@
 
 <style>
   /* Login start */
+
+  #choose {
+    height: 200px;
+  }
 
   .login {
     position: relative;

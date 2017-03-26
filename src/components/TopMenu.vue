@@ -3,7 +3,7 @@
   <div id="header" class="u-full-width" @mouseleave="alertFadeOut = false; alertProfile = false;">
     <div class="row max-center">
       <ul>
-        <li id="logo" class="u-pull-left"><a href="/#">logo</a></li>
+        <li id="logo" class="u-pull-left"><a href="index.html">adshot</a></li>
         <li class="u-pull-left" v-for="nameMenu in nameMenus">
           <a :href="nameMenu.link">{{nameMenu.name}}</a>
         </li>
@@ -101,13 +101,12 @@
         dateCreate = new Date(localStorage['createDateToken']).getTime();
 
       if (!localStorage['tokenCSRF'] || dateToday >= dateCreate) {
-
+        localStorage.clear();
         this.$resource('gettokencsrf').get().then((response) => {
           localStorage.setItem('createDateToken', plusDay);
           localStorage.setItem('tokenCSRF', response.body.tokenCSRF);
-          console.log(localStorage['tokenCSRF']);
         }, (response) => {
-          console.error('error', response);
+
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
         });
 
@@ -137,7 +136,7 @@
            this.notificationSend();
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
       },
       notificationSend() {
@@ -149,7 +148,7 @@
 
         this.$resource('getnotification').save({}, dataJson).then((response) => {
           let readings;
-          console.log(response);
+
           if (response.body.resultFromDb.length) {
             this.notificationDataAccess = response.body.resultFromDb;
             readings = this.notificationDataAccess.filter((read) => {
@@ -159,13 +158,12 @@
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
       },
       exit() {
 
         if (localStorage.saveAuth === 'false') {
-          console.log('clear');
           this.exitVisible = false;
           localStorage.clear();
         }
@@ -239,11 +237,16 @@
   }
 
   #header #logo a {
-    font-size: 1.7em;
-    color: #fff;
-    text-decoration: none;
+    font-family: "Montserrat",sans-serif;
+    letter-spacing: 3px;
+    font-weight: 700;
     text-transform: uppercase;
+    -webkit-transition: 0.36s;
+    transition: 0.36s;
+    font-size: 1.7em;
+    text-decoration: none;
     padding: 0 20px 0 0;
+    color: #fff
   }
 
   #header ul li {

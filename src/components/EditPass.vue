@@ -90,13 +90,13 @@
           this.$auth = this.$resource('setnewpass');
 
           this.$auth.save({}, dataJson).then((response) => {
-            console.log(response);
+
             if (response.body.code === 'ok') {
               this.$router.push('/');
             }
           }, (response) => {
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-            console.error('error', response);
+
           });
         };
 

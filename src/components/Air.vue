@@ -66,11 +66,10 @@
               _id: id
             },
             dataJson = JSON.stringify(data);
-          console.log(data);
         this.$resource('savecountvideo').save({}, dataJson).then((response) => {
-            console.log(response);
+
           }, (response) => {
-            console.error('error', response);
+
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
           });
       }
@@ -130,7 +129,6 @@
 
           player.load(manifestUri).then(function () {
             // This runs if the asynchronous load is successful.
-            console.log('The video has now been loaded!');
           }).catch(onError);  // onError is executed if the asynchronous load fails.
         }
 
@@ -147,10 +145,10 @@
         initApp();
       };
 
-      console.log(dataJson);
+
 
       this.$resource('getonair').save({}, dataJson).then((response) => {
-        console.log(response);
+
         videoPlayer =  response.body.resultFromDb;
 
         if(!videoPlayer.length) {
@@ -162,7 +160,7 @@
 
       }, (response) => {
         miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-        console.error('error', response);
+
       });
 
 

@@ -61,7 +61,7 @@
     },
     data() {
       return {
-        relativeClss: false,
+        relativeClss: true,
         iconVisible: true,
         notification: true,
         companyLists: [],
@@ -91,13 +91,13 @@
           let dataJson = JSON.stringify(data);
 
           this.$resource('getallcompany').save({}, dataJson).then((response) => {
-            console.log(response);
+
             this.companyLists = response.body.resultFromDb;
             if (this.companyLists.length > 2) {
               this.relativeClss = true;
             }
           }, (response) => {
-            console.error('error', response);
+
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
           });
         },
@@ -117,7 +117,7 @@
           if (this.search.length > 3) {
 
             this.$resource('searchcompany').save({}, dataJson).then((response) => {
-              console.log(response);
+
               this.companyLists = response.body.resultFromDb;
               if (this.companyLists.length > 2) {
                 this.relativeClss = true;
@@ -125,7 +125,7 @@
                 this.relativeClss = false;
               }
             }, (response) => {
-              console.error('error', response);
+
               miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
             });
 

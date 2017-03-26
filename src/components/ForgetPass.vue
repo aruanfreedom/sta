@@ -45,8 +45,6 @@
           },
           dataJson = JSON.stringify(data);
 
-        console.log(dataJson);
-
         this.$resource('resetpass').save({}, dataJson).then((response) => {
           if (response.body.activateToken) {
             localStorage.setItem('activateToken', response.body.activateToken);
@@ -54,7 +52,7 @@
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
       }
     }

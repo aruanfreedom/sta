@@ -120,8 +120,7 @@
     mounted() {
 
       let modalCall = (date) => {
-        console.log(date)
-        this.videoSend(); 
+        this.videoSend();
         this.showModal = true;
         this.dateVideo = date || false;
       },
@@ -135,13 +134,13 @@
 
       let updateCalendar = (info) => {
         let infoVideos = info || [];
-        
+
         if(infoVideos) {
           for(let infoItem of info) {
             infoCalendar.push(
               {
-                title: `Имя - ${infoItem.originalFileName} 
-                        Показы - ${infoItem.statusOfPlayToEnd} 
+                title: `Имя - ${infoItem.originalFileName}
+                        Показы - ${infoItem.statusOfPlayToEnd}
                         Цена - ${infoItem.amountResult.$numberDecimal}`,
                 start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
               }
@@ -157,11 +156,10 @@
           theme: true,
           businessHours: true,
 
-          dayClick: function(date) {            
+          dayClick: function(date) {
             modalCall(date.format());
           },
           eventClick: function(event, jsEvent, view) {
-            console.info(event.start._d)
             let date = moment(event.start._d).format();
             modalCall(date);
           },
@@ -170,18 +168,18 @@
 
       // Вызов всех видео информации для каленьдарья
         this.$resource('getallvideoforadvertiser').save({}, dataJson).then((response) => {
-          console.log(response);
+
             this.infoCalendar = [];
             this.infoCalendar = response.body.resultFromDb;
             updateCalendar(this.infoCalendar);
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
-      
+
 
       this.$resource('getonecompany?id={id}').get({id: this.$route.params.id}).then((response) => {
-        console.log(response);
+
 
         this.addressOfmonitor = response.body.resultFromDb.addressOfmonitor;
         this.totalCost = response.body.resultFromDb.totalCost.$numberDecimal;
@@ -189,14 +187,14 @@
         this.nameOfCompany = response.body.resultFromDb.nameOfCompany;
 
       }, (response) => {
-        console.error('error', response);
+
         miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
       });
 
     },
     methods: {
       sendScreenHolder: function(video) {
- 
+
         let fullDate = new Date(this.dateVideo),
             newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
              + ('0' + fullDate.getDate()).slice(-2);
@@ -212,10 +210,9 @@
           },
           dataJson = JSON.stringify(data);
 
-          console.log(data.dateOfShowVideo);
 
         this.$resource('setnewvideotoscheduling').save({}, dataJson).then((response) => {
-          console.log(response);
+
           if (response.body.resultFromDb) {
             let priceArr = [],
                 price = response.body.resultFromDb;
@@ -231,7 +228,7 @@
           }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
       },
@@ -244,11 +241,11 @@
           dataJson = JSON.stringify(data);
 
         this.$resource('getallvideos').save({}, dataJson).then((response) => {
-          console.log(response);
+
           this.videoMyData = response.body.resultFromDb;
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-          console.error('error', response);
+
         });
 
       }
