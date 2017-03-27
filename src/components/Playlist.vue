@@ -8,7 +8,9 @@
       <input type='file' id="add-video" accept='video/*' @change="addVideo"/>
     </div>
     <ul class="card playlists-items">
-      <li class="playlist-empty" v-if="!videoFileList.length">Нет видеофайлов</li>
+      <li class="playlist-empty" v-if="!videoFileList.length">
+        <img src="../../static/img/not-video.png" alt="">
+      </li>
       <li class="progress-bar"
           :style="{width: (procentLoading <= 100) ? procentLoading + '%' : procentLoading = 100}"
           :class="{doneVideo: procentLoading > 50}" v-if="procentLoading">
@@ -434,9 +436,10 @@ Animate the stripes
   }
 
   .playlist-empty {
-    background: #9C27B0;
+    background: #fff;
+    text-align: center;
     color: #fff;
-    padding: 15px 10px;
+    padding: 100px 10px;
   }
 
   #add-video {

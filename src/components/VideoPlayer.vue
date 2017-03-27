@@ -9,13 +9,7 @@
 
 <script>
   export default {
-    name: 'videoPlayer',
-    props: ['relativeCls'],
-    data() {
-      return {
-        relative: this.relativeCls
-      }
-    }
+    name: 'videoPlayer'
   }
 </script>
 

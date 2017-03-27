@@ -201,10 +201,9 @@
             pass: this.password,
             role: this.role,
             costOfSecond: String(this.priceSecond),
-            // nameOfCompany: this.nameCompany,
+            nameOfCompany: this.nameCompany,
             addressOfMonitor: `г. ${this.city}, ул. ${this.streetAdress}, дом. ${this.home}, кв. ${this.apartment}`,
-            graphOfWork: "с " + this.workStart + " до " + this.workEnd,
-            numberOfBankCard: String(this.numberCard)
+            graphOfWork: "с " + this.workStart + " до " + this.workEnd
           };
 
         let roleSend = () => {
@@ -214,15 +213,12 @@
           this.$resource('register').save({}, dataJson).then((response) => {
 
             if (response.body.resultFromDb.n === 1) {
-              miniToastr.warn("Пожалуйста активируйте почту!", "Оповещение", 8000, () => {
-                this.$router.push('/login');
-              });
-              miniToastr.success("Поздравляю! Вы зарегистрированны", "Оповещение", 5000);
+                this.$router.push('/email-activate');
             } else if (response.body.resultFromDb.message) {
               miniToastr.error("Почта занята", "Ошибка!", 5000);
             } else if (response.body.code === "noCsrfToken") {
               miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
-                this.$router.push('/login');
+                this.$router.push('/');
               });
             }
           }, (response) => {
@@ -241,11 +237,11 @@
               miniToastr.error("Такой пользователь не найден", "Ошибка!", 5000);
             } else if (response.body.code === 'noCsrfToken') {
               miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
-                this.$router.push('/login');
+                this.$router.push('/');
               });
             } else if (response.body.code === 'passWrongRegExp' || response.body.code === 'passWrong') {
               miniToastr.error("Не правильный логин/пароль", "Ошибка!", 5000, () => {
-                this.$router.push('/login');
+                this.$router.push('/');
               });
             } else if (response.body.code === 'ok') {
               localStorage.setItem('sessionToken', response.body.sessionToken);

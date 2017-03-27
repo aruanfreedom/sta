@@ -6,10 +6,10 @@
 
           <div class="modal-header">
             <slot name="header">
-              default header
+              окно
             </slot>
             <slot name="date">
-              default date
+              {{new Date()}}
             </slot>
           </div>
 

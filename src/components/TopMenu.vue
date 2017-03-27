@@ -28,7 +28,7 @@
           </div>
         </li>
         <li id="info-icon" class="u-pull-right">
-          <a href="#"><img src="static/img/icons/ic_info_outline_white_24px.svg" alt=""></a>
+          <a href="#/login"><img src="static/img/icons/ic_info_outline_white_24px.svg" alt=""></a>
         </li>
         <li class="parent-menu u-pull-right" v-if="notificationShow">
           <a href="#" @click.prevent="alertFadeOut = true; alertProfile = false;">
@@ -170,7 +170,7 @@
         // Удаляем роль чтобы функцию проверка роли
         // на авторизаций не перекидывало по кабинетам
         delete localStorage.role;
-        this.$router.push('/login');
+        this.$router.push('/');
       }
     }
   }

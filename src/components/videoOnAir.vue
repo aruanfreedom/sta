@@ -10,12 +10,6 @@
 <script>
   export default {
     name: 'videoPlayer',
-    props: ['relativeCls'],
-    data() {
-      return {
-        relative: this.relativeCls
-      }
-    },
     mounted() {
       var $video=$('video');
         //fullscreen button clicked

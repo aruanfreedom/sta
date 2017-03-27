@@ -22,12 +22,18 @@
         top: auto !important;
     }
 
+    html {
+        height: 100%;
+    }
+
     body {
+      position: relative;
+      min-height: 100%;
       min-width: 960px;
     }
 
     #content {
-      padding: 60px 0 20px 0;
+      padding: 60px 0;
       min-width: 960px;
     }
 

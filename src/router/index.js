@@ -11,13 +11,14 @@ import ListsCompany from 'components/ListsCompany'
 import Company from 'components/Company'
 import Air from 'components/Air'
 import Price from 'components/Price'
+import EmailActivate from 'components/EmailActivate'
 import NotPage from 'components/NotPage'
 
 Vue.use(Router);
 
 export default new Router({
     routes: [{
-        path: '/login',
+        path: '/',
         name: 'Login',
         components: {
             default: Login
@@ -81,6 +82,12 @@ export default new Router({
         name: 'price',
         components: {
             default: Price
+        }
+    },{
+        path: '/email-activate',
+        name: 'email',
+        components: {
+            default: EmailActivate
         }
     }, {
         path: '*',

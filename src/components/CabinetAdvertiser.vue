@@ -30,7 +30,6 @@
   import Playlist from './Playlist';
   import VideoPlayer from './VideoPlayer';
   import flowPlayerCss from '../assets/css/skin.css'
-  import miniToastr from 'mini-toastr'
   import shaka from '../../static/js/shaka-player.compiled.js';
 
   export default {
@@ -41,20 +40,18 @@
       'Playlist': Playlist,
       'VideoPlayer': VideoPlayer
     },
-    props: ['relativeCls'],
     data() {
       return {
-        relative: this.relativeCls,
         advertiser: true,
-        playlistTitle: 'Все плейлисты',
+        playlistTitle: 'Мои видео',
         iconVisible: true,
         notification: true,
         nameMenus: [
           {
-            name: 'Кабинет ИПешника',
+            name: 'Личный кабинет',
             link: '#cabinet-advertiser'
           }, {
-            name: 'Выбрать экран для размещения',
+            name: 'Поиск компаний',
             link: '#search-company'
           }
         ]

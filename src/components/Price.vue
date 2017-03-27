@@ -71,10 +71,11 @@
               } else if (localStorage.role === 'advertiser') {
                 this.$router.push('/cabinet-advertiser');
               }
-              miniToastr.success("Ваши данные отправлены");
-          } else {
-            miniToastr.error("Платежная система не разрешена для магазина");
-          }
+              // miniToastr.success("Ваши данные отправлены");
+          } 
+          // else {
+            // miniToastr.error("Платежная система не разрешена для магазина");
+          // }
         }, (response) => {
           miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
 
@@ -82,21 +83,19 @@
 
         }
     },
-    props: ['relativeCls'],
     data() {
       return {
         numberCard: '',
         isErrorCard: false,
-        relative: this.relativeCls,
         advertiser: false,
         notification: true,
         iconVisible: false,
         nameMenus: [
           {
-            name: 'Cab экран',
+            name: 'Личный кабинет',
             link: '#cabinet'
           }, {
-            name: 'On-air',
+            name: 'Начать трансляцию',
             link: '#on-air'
           }
         ]

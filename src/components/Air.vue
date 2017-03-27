@@ -32,20 +32,18 @@
       'Bottom': Bottom,
       'VideoPlayer': videoOnAir
     },
-    props: ['relativeCls'],
     data() {
       return {
-        relative: this.relativeCls,
         advertiser: false,
         notification: true,
-        playlistTitle: 'Предлогаемые',
+        playlistTitle: 'Заявки на рекламу',
         iconVisible: false,
         nameMenus: [
           {
-            name: 'Cab экран',
+            name: 'Личный кабинет',
             link: '#cabinet'
           }, {
-            name: 'On-air',
+            name: 'Начать трансляцию',
             link: '#on-air'
           }
         ]
@@ -152,7 +150,7 @@
         videoPlayer =  response.body.resultFromDb;
 
         if(!videoPlayer.length) {
-          miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
+          // miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
           return false;
         }
 

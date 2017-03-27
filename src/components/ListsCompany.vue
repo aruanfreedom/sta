@@ -44,7 +44,7 @@
       <!--selectmonitor end -->
     </div>
 
-    <Bottom :relativeCls="relativeClss"></Bottom>
+    <Bottom></Bottom>
   </div>
 </template>
 
@@ -61,17 +61,16 @@
     },
     data() {
       return {
-        relativeClss: true,
         iconVisible: true,
         notification: true,
         companyLists: [],
         search: '',
         nameMenus: [
           {
-            name: 'Кабинет ИПешника',
+            name: 'Личный кабинет',
             link: '#cabinet-advertiser'
           }, {
-            name: 'Выбрать экран для размещения',
+            name: 'Поиск компаний',
             link: '#search-company'
           }
         ]
@@ -93,9 +92,7 @@
           this.$resource('getallcompany').save({}, dataJson).then((response) => {
 
             this.companyLists = response.body.resultFromDb;
-            if (this.companyLists.length > 2) {
-              this.relativeClss = true;
-            }
+            
           }, (response) => {
 
             miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
@@ -119,11 +116,7 @@
             this.$resource('searchcompany').save({}, dataJson).then((response) => {
 
               this.companyLists = response.body.resultFromDb;
-              if (this.companyLists.length > 2) {
-                this.relativeClss = true;
-              } else {
-                this.relativeClss = false;
-              }
+            
             }, (response) => {
 
               miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);

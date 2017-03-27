@@ -7,7 +7,7 @@
                 :btnSubmitText="submitText">
       </Form-vue>
     </div>
-    <Bottom :relativeCls="relativeCls"></Bottom>
+    <Bottom></Bottom>
   </div>
 </template>
 
@@ -26,7 +26,6 @@
     data() {
       return {
         titleForm: 'Регистрация Экрана',
-        relativeCls: true,
         submitText: 'Зарегистрироваться',
         screenHolder: 'screenHolder'
       }
