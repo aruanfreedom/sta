@@ -146,8 +146,6 @@
       closeModal() {
         this.showModal = false;       
         this.informationVideoCalendar();
-        // location.reload();
-        $('#calendar').fullCalendar( 'refetchEvents' );
       },
       informationVideoCalendar() {
 
@@ -184,7 +182,7 @@
         
           $('#calendar').fullCalendar({
               // enable theme
-              theme: true,
+              theme: false,
 
               dayClick: function(date) {
                  console.log(date.format());
@@ -207,7 +205,6 @@
                 start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
               }]
           }
-
         $('#calendar').fullCalendar( 'addEventSource', infoCalendarAdd);     
         $('#calendar').fullCalendar( 'refetchEvents' );
 
