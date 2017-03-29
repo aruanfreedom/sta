@@ -27,9 +27,9 @@
             </div>
           </div>
         </li>
-        <li id="info-icon" class="u-pull-right">
+        <!--<li id="info-icon" class="u-pull-right">
           <a href="#/login"><img src="static/img/icons/ic_info_outline_white_24px.svg" alt=""></a>
-        </li>
+        </li>-->
         <li class="parent-menu u-pull-right" v-if="notificationShow">
           <a href="#" @click.prevent="alertFadeOut = true; alertProfile = false;">
             <img id="notification-icon"

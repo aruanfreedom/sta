@@ -90,8 +90,11 @@
     data() {
       return {
         notificationData: [],
+        nameVideo: '',
+        addAccess: false,
         infoCalendar: [],
         price: '',
+        priceVideo: '',
         priceId: '',
         dateVideo: new Date(),
         videoClick: false,
@@ -139,93 +142,88 @@
     //     if (val.length !== old.length) { 
     //       console.log(val.length)
     //       console.info(old.length)
+    //       this.dateAddForCalendar(this.infoCalendar);
     //     }
     //   }
     // },
     methods: {
-      closeModal() {
-        this.showModal = false;       
-        this.informationVideoCalendar();
-      },
-      informationVideoCalendar() {
+      dateAddForCalendar(newInfo) {
+        console.info(newInfo)
+        let infoVideos = newInfo || [],
+            infoCalendarAdd = [];
 
-      let modalCall = (date) => {
-        this.videoSend();
-        this.showModal = true;
-        this.dateVideo = date || false;
-      },
-      dataVideo = {
-        tokenCSRF: localStorage['tokenCSRF'],
-        sessionToken: localStorage['sessionToken'],
-        userId: this.$route.params.id
-      },
-      dataJson = JSON.stringify(dataVideo),
-      infoCalendar = [], infoCalendarAdd = [];
-
-      let updateCalendar = (info) => {
-        let infoVideos = info || [];
-        if(infoVideos) {
-          console.log(infoVideos)
-          for(let infoItem of info) { 
-            infoCalendar.push({
-              
-                title: `Имя - ${infoItem.originalFileName}
-                        Показы - ${infoItem.statusOfPlayToEnd}
-                        Цена - ${infoItem.amountResult.$numberDecimal}`,
-                start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
-              });
-          }
-
-          infoCalendar.pop()
-          console.log(infoCalendar)
-                   
-        
-          $('#calendar').fullCalendar({
-              // enable theme
-              theme: false,
-
-              dayClick: function(date) {
-                 console.log(date.format());
-                modalCall(date.format());
-              },
-              eventClick: function(event, jsEvent, view) {
-                let date = moment(event.start._d).format("YYYY-MM-DD");
-                console.log(date);
-                modalCall(date);
-              },
-              events: infoCalendar
-            });
-           
-
-          for(let infoItem of info) { 
+        for(let infoItem of infoVideos) { 
             infoCalendarAdd = [{
-                title: `Имя - ${infoItem.originalFileName}
-                        Показы - ${infoItem.statusOfPlayToEnd}
-                        Цена - ${infoItem.amountResult.$numberDecimal}`,
-                start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
+                title: `Имя - ${this.nameVideo}
+                        Показы - 0
+                        Цена - ${this.priceVideo}`,
+                start: `${moment(this.dateVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
               }]
           }
         $('#calendar').fullCalendar( 'addEventSource', infoCalendarAdd);     
         $('#calendar').fullCalendar( 'refetchEvents' );
+      },
+      closeModal() {
+        this.showModal = false;   
+      },
+      informationVideoCalendar() {
 
+        let modalCall = (date) => {
+          this.videoSend();
+          this.showModal = true;
+          this.dateVideo = date || false;
+        },
+        dataVideo = {
+          tokenCSRF: localStorage['tokenCSRF'],
+          sessionToken: localStorage['sessionToken'],
+          userId: this.$route.params.id
+        },
+        dataJson = JSON.stringify(dataVideo),
         infoCalendar = [];
 
-        } else {
-          return false;
+        let updateCalendar = (info) => {
+          let infoVideos = info || [];
+          if(infoVideos) {
+            for(let infoItem of infoVideos) { 
+              infoCalendar.push({
+                  title: `Имя - ${infoItem.originalFileName}
+                          Показы - ${infoItem.statusOfPlayToEnd}
+                          Цена - ${infoItem.amountResult.$numberDecimal}`,
+                  start: `${moment(infoItem.dateOfShowVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
+                });
+            }                    
+          
+            $('#calendar').fullCalendar({
+                // enable theme
+                theme: false,
+
+                dayClick: function(date) {
+                  console.log(date.format());
+                  modalCall(date.format());
+                },
+                eventClick: function(event, jsEvent, view) {
+                  let date = moment(event.start._d).format("YYYY-MM-DD");
+                  console.log(date);
+                  modalCall(date);
+                },
+                events: infoCalendar
+              });
+
+          } else {
+            return false;
+          }
         }
-      }
 
-      // Вызов всех видео информации для каленьдарья
-        this.$resource('getallvideoforadvertiser').save({}, dataJson).then((response) => {
-            this.infoCalendar = [];
-            this.infoCalendar = response.body.resultFromDb;
-            updateCalendar(this.infoCalendar);
-        }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-
-        });
+        // Вызов всех видео информации для каленьдарья
+          this.$resource('getallvideoforadvertiser').save({}, dataJson).then((response) => {
+              this.infoCalendar = [];
+              this.infoCalendar = response.body.resultFromDb;
+              updateCalendar(this.infoCalendar);
+          }, (response) => {
+            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          });
       },
-      sendScreenHolder: function(video) {
+      sendScreenHolder (video) {
 
         let fullDate = new Date(this.dateVideo),
             newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
@@ -254,7 +252,10 @@
               priceArr.push(key);
             }
 
+            this.nameVideo = video.originalFileName;
+            this.priceVideo = video.price;
             this.videoMyData = priceArr;
+            this.dateAddForCalendar(this.infoCalendar);
 
             // miniToastr.success("Ваша видео отправлено.", "Оповещение", 5000);
           }

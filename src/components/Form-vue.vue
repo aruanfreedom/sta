@@ -317,6 +317,7 @@
           se.show();
           se[0].size=2;
         });
+        
         $("#choose").on("click",function(){
           var se=$(this);
           se.hide();

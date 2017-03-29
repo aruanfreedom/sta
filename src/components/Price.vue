@@ -29,7 +29,7 @@
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
   import miniToastr from 'mini-toastr'
-  import credit from '../../static/js/credit.js';
+  // import credit from '../../static/js/credit.js';
 
   export default {
     name: 'cabinetAdvertiser',

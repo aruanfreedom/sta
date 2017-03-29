@@ -3,7 +3,7 @@
 
     window.onload = function() {
 
-        $(".credit").credit();
+        // $(".credit").credit();
 
 
     };

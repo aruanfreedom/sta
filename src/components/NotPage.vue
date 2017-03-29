@@ -10,7 +10,7 @@
               <img src="static/img/dribbble-shot-404.png" alt="404 tv">
             </div>
             <div class="text-center">
-              <a href="index.html">Вернутся на главную</a> - <a href="#/login">Авторизоваться</a>
+              <a href="#/">Вернутся на главную</a> - <a href="#/">Авторизоваться</a>
             </div>
           </div>
         </div>
@@ -40,7 +40,9 @@
   .not-bg-page {
     background: url("../../static/img/pattern.png") repeat;
     position: absolute;
-    height: 100%;
+    padding-bottom: 0 !important;
+    height: 90%;
+    // height: 100%;
     width: 100%;
   }
 

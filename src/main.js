@@ -18,12 +18,6 @@ Vue.use(VueResource);
 Vue.http.options.root = 'http://test.efflife.kz';
 miniToastr.init();
 
-// Vue.http.interceptors.push((request, next) => {
-//   request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-//   next()
-// });
-
-/* eslint-disable no-new */
 
 new Vue({
     el: '#app',
