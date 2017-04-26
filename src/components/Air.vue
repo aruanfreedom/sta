@@ -7,7 +7,10 @@
       <div id="player">
         <div class="row">
           <div class="twelve columns">
-            <VideoPlayer></VideoPlayer>
+           <div class="playlist-empty" v-show="!videoFileListVisible">
+            <img src="../../static/img/not-video.png" alt="">
+          </div>
+            <videoOnAir v-show="videoFileListVisible"></videoOnAir>
           </div>
         </div>
       </div>
@@ -22,7 +25,7 @@
   import Bottom from './Bottom';
   import videoOnAir from './videoOnAir';
   import flowPlayerCss from '../assets/css/skin.css'
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr';
   import shaka from '../../static/js/shaka-player.compiled.js';
 
   export default {
@@ -30,11 +33,12 @@
     components: {
       'TopMenu': TopMenu,
       'Bottom': Bottom,
-      'VideoPlayer': videoOnAir
+      'videoOnAir': videoOnAir
     },
     data() {
       return {
         advertiser: false,
+        videoFileListVisible: false,
         notification: true,
         playlistTitle: 'Заявки на рекламу',
         iconVisible: false,
@@ -50,12 +54,11 @@
       }
     },
     mounted() {
+      // try {
 
       let fullDate = new Date(),
-            newDate = fullDate.getFullYear() + '-' + ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'
-             + ('0' + fullDate.getDate()).slice(-2);
-
-            newDate + "T00:00:00.000Z";
+          newDate = fullDate.getFullYear() + '-' + 
+          ('0' + (fullDate.getMonth()+1)).slice(-2) + '-'+ ('0' + fullDate.getDate()).slice(-2) + "T00:00:00.000Z";
 
       let sendEndVideo = (id) => {
         let data = {
@@ -64,13 +67,13 @@
               _id: id
             },
             dataJson = JSON.stringify(data);
+
         this.$resource('savecountvideo').save({}, dataJson).then((response) => {
-
+            console.info(response)
           }, (response) => {
-
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
           });
-      }
+      };
 
       let data = {
         tokenCSRF: localStorage['tokenCSRF'],
@@ -82,8 +85,10 @@
       videoPlayer = [];
 
       let playlistEmulate = () => {
-        let manifestUri = videoPlayer[videoStep].mpdOutputFile;
         let video = document.getElementById('video');
+        let manifestUri = videoPlayer[videoStep].mpdOutputFile;
+
+        // video.src = '../static/video/видео12345.mp4';
 
         function initApp() {
           // Install built-in polyfills to patch browser incompatibilities.
@@ -93,27 +98,53 @@
           if (shaka.Player.isBrowserSupported()) {
             // Everything looks good!
             initPlayer();
+            //  flash();
           } else {
             // This browser does not have the minimum set of APIs we need.
-            console.error('Browser not supported!');
+            // alert('Browser not supported!');
+            flash();
+
           }
         }
 
-        function nextVideo() {
-
+        function playlistHidden() {
           if (videoStep !== videoPlayer.length - 1) {
             videoStep++;
           } else {
             videoStep = 0;
           }
+        }
+
+        function nextVideo() {
+
+          playlistHidden();
 
           sendEndVideo(videoPlayer[videoStep]._id);
 
           manifestUri = videoPlayer[videoStep].mpdOutputFile;
+
           initPlayer();
         }
 
+        function nextVideoFlash() {
 
+          playlistHidden();
+
+          sendEndVideo(videoPlayer[videoStep]._id);
+
+          video.src = videoPlayer[videoStep].mp4OutputFile;
+
+          // video.src = '../static/video/видео1234.mp4';
+
+          // initPlayer();
+        }
+
+        function flash() {
+          playlistHidden();
+          video.src = videoPlayer[videoStep].mp4OutputFile;
+          // video.src = '../static/video/видео12345.mp4';
+          video.addEventListener('ended', nextVideoFlash);
+        }
 
         function initPlayer() {
 
@@ -139,7 +170,6 @@
         // Log the error.
         console.error('Error code', error.code, 'object', error);
       }
-
         initApp();
       };
 
@@ -148,18 +178,27 @@
       this.$resource('getonair').save({}, dataJson).then((response) => {
 
         videoPlayer =  response.body.resultFromDb;
+        console.log(response);
 
         if(!videoPlayer.length) {
           // miniToastr.info("Список утвержденых видео отсутствует", "Оповещение!", 5000);
-          return false;
+          this.videoFileListVisible = false;
+          return;
         }
+
+        this.videoFileListVisible = true;
 
         playlistEmulate();
 
       }, (response) => {
-        miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-
+        toastr.error("Неполадки в системе. Попробуйте позже.");
       });
+
+    // } catch(e) {
+
+    //   alert('Ошибка ' + e.name + ":" + e.message + "\n" + e.stack); // (3) <--
+
+    // }
 
 
 

@@ -71,7 +71,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr';
   import Modal from './Modal'
   import calendarCss from '../assets/css/fullcalendar.css'
 
@@ -133,7 +133,7 @@
 
       }, (response) => {
 
-        miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+        toastr.error("Неполадки в системе. Попробуйте позже.");
       });
 
     },
@@ -147,19 +147,14 @@
     //   }
     // },
     methods: {
-      dateAddForCalendar(newInfo) {
-        console.info(newInfo)
-        let infoVideos = newInfo || [],
-            infoCalendarAdd = [];
+      dateAddForCalendar() {
+        let infoCalendarAdd = [{
+          title: `Имя - ${this.nameVideo}
+                  Показы - 0
+                  Цена - ${this.priceVideo}`,
+          start: `${moment(this.dateVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
+        }]
 
-        for(let infoItem of infoVideos) { 
-            infoCalendarAdd = [{
-                title: `Имя - ${this.nameVideo}
-                        Показы - 0
-                        Цена - ${this.priceVideo}`,
-                start: `${moment(this.dateVideo).format('YYYY-MM-DD')} + T00:00:00.000Z`
-              }]
-          }
         $('#calendar').fullCalendar( 'addEventSource', infoCalendarAdd);     
         $('#calendar').fullCalendar( 'refetchEvents' );
       },
@@ -220,7 +215,7 @@
               this.infoCalendar = response.body.resultFromDb;
               updateCalendar(this.infoCalendar);
           }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
           });
       },
       sendScreenHolder (video) {
@@ -255,12 +250,12 @@
             this.nameVideo = video.originalFileName;
             this.priceVideo = video.price;
             this.videoMyData = priceArr;
-            this.dateAddForCalendar(this.infoCalendar);
+            this.dateAddForCalendar();
 
             // miniToastr.success("Ваша видео отправлено.", "Оповещение", 5000);
           }
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
 
@@ -277,7 +272,7 @@
 
           this.videoMyData = response.body.resultFromDb;
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
 

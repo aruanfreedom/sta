@@ -38,6 +38,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
+  import toastr from 'toastr';
 
   export default {
     name: 'resetpass',
@@ -72,9 +73,8 @@
     },
     mounted() {
       if (!localStorage['tokenCSRF']) {
-        miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
-          this.$router.push('/');
-        });
+        toastr.error("Неполадки в системе. Попробуйте позже.");
+        this.$router.push('/');
       }
     },
     methods: {
@@ -95,7 +95,7 @@
               this.$router.push('/');
             }
           }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
 
           });
         };

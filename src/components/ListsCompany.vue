@@ -51,7 +51,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr';
 
   export default {
     name: 'listsCompany',
@@ -95,7 +95,7 @@
             
           }, (response) => {
 
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
           });
         },
 
@@ -119,7 +119,7 @@
             
             }, (response) => {
 
-              miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+              toastr.error("Неполадки в системе. Попробуйте позже.");
             });
 
           }

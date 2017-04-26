@@ -43,7 +43,10 @@
             <div class="menu-item" v-if="!notificationDataAccess.length">
               <div class="row">
                 <div class="twelve columns">
-                  <p>Новых уведомлении нет</p>
+                  <div class="text-center">
+                    <img src="static/img/not-message.png" alt="not message">
+                    <p>Новых уведомлении нет</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -77,13 +80,16 @@
 </template>
 
 <script>
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr'
 
-  export default {
+  export default 
+  {
     name: 'Header',
     props: ['notification', 'nameLink', 'notificationData'],
-    data() {
-      return {
+    data() 
+    {
+      return 
+      {
         roleLocal: localStorage.role || false,
         alertFadeOut: false,
         alertProfile: false,
@@ -100,70 +106,86 @@
         dateToday = date.getTime(),
         dateCreate = new Date(localStorage['createDateToken']).getTime();
 
-      if (!localStorage['tokenCSRF'] || dateToday >= dateCreate) {
+      if (!localStorage['tokenCSRF'] || dateToday >= dateCreate) 
+      {
         localStorage.clear();
-        this.$resource('gettokencsrf').get().then((response) => {
+        this.$resource('gettokencsrf').get().then((response) => 
+        {
           localStorage.setItem('createDateToken', plusDay);
           localStorage.setItem('tokenCSRF', response.body.tokenCSRF);
-        }, (response) => {
-
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+        }, (response) => 
+        {
+          toastr.error("Неполадки в системе. Попробуйте позже.");
         });
 
       }
 
-      if (this.notificationShow) {
+      if (this.notificationShow) 
+      {
         this.notificationSend();
       }
 
     },
     filters: {
-            date(data) {
+            date(data) 
+            {
                 return moment(data).format('YYYY-MM-DD');
             }
         },
-    methods: {
-      readingsAll() {
-        let data = {
+    methods: 
+    {
+      readingsAll()
+      {
+        let data = 
+          {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken']
           },
           dataJson = JSON.stringify(data);
 
-        this.$resource('updatestatusnotification').save({}, dataJson).then((response) => {
+        this.$resource('updatestatusnotification').save({}, dataJson).then((response) => 
+        {
            this.readings = [];
            this.notificationDataAccess = [];
            this.notificationSend();
-        }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+        }, (response) => 
+        {
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
       },
-      notificationSend() {
-        let data = {
+      notificationSend() 
+      {
+        let data = 
+          {
             tokenCSRF: localStorage['tokenCSRF'],
             sessionToken: localStorage['sessionToken']
           },
           dataJson = JSON.stringify(data);
 
-        this.$resource('getnotification').save({}, dataJson).then((response) => {
+        this.$resource('getnotification').save({}, dataJson).then((response) => 
+        {
           let readings;
 
-          if (response.body.resultFromDb.length) {
+          if (response.body.resultFromDb.length) 
+          {
             this.notificationDataAccess = response.body.resultFromDb;
-            readings = this.notificationDataAccess.filter((read) => {
+            readings = this.notificationDataAccess.filter((read) => 
+            {
               return !read.statusRead;
             });
             this.readings = readings;
           }
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
       },
-      exit() {
+      exit() 
+      {
 
-        if (localStorage.saveAuth === 'false') {
+        if (localStorage.saveAuth === 'false') 
+        {
           this.exitVisible = false;
           localStorage.clear();
         }

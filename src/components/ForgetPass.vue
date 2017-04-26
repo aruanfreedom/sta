@@ -25,6 +25,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
+  import toastr from 'toastr';
 
   export default {
     name: 'forget',
@@ -51,7 +52,7 @@
             this.$router.push('/resetpass');
           }
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
       }

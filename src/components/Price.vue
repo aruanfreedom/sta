@@ -28,8 +28,8 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import miniToastr from 'mini-toastr'
-  // import credit from '../../static/js/credit.js';
+  import toastr from 'toastr'
+  import credit from '../../static/js/credit.js';
 
   export default {
     name: 'cabinetAdvertiser',
@@ -71,13 +71,9 @@
               } else if (localStorage.role === 'advertiser') {
                 this.$router.push('/cabinet-advertiser');
               }
-              // miniToastr.success("Ваши данные отправлены");
           } 
-          // else {
-            // miniToastr.error("Платежная система не разрешена для магазина");
-          // }
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
 

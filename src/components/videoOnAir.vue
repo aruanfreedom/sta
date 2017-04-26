@@ -1,9 +1,13 @@
 <template>
   <div class="video-container one-air-video">
+   <div class="text-center">
+      <button id="full-video">Полный экран</button>
+    </div>
     <video id="video"
+           class="video-on"
            poster="static/img/poster.jpg"
-           autoplay></video>
-    <button id="full-video">Полный экран</button>
+           autoplay>
+    </video>
   </div>
 </template>
 
@@ -28,7 +32,7 @@
                           // document.mozCancelFullScreen();   
             }
             else { 
-                  alert('Your browsers doesn\'t support fullscreen');
+                  alert('Ваш браузер не поддерживает Полный экран');
             }
         });
     }
@@ -43,10 +47,7 @@
 
   #full-video {
     background: #fff;
-    position: absolute;
-    right: 2%;
-    top: 0px;
-    // z-index: 11111111111;
+    position: relative;
   }
 
   video {
@@ -60,6 +61,11 @@
   #video {
     /*height: 100%;*/
     height: 470px;
+    width: 100%;
+  }
+
+  #video.video-on {
+    height: 420px;
     width: 100%;
   }
 

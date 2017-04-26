@@ -57,7 +57,7 @@
 </template>
 
 <script>
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr'
 
   export default {
     name: 'playlist',
@@ -99,8 +99,7 @@
               this.screenHolderFunc();
           }
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
-
+          toastr.error("Неполадки в системе. Попробуйте позже.");
         });
 
       },
@@ -116,11 +115,11 @@
 
 
         this.$resource('getallvideos').save({}, dataJson).then((response) => {
-
+          console.log(response);
           this.videoFileList = response.body.resultFromDb;
 //          this.videoFileList.reverse();
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
 
@@ -135,9 +134,8 @@
         this.$resource('getallvideoforscreenholder').save({}, dataJson).then((response) => {
 
           this.videoFileList = response.body.resultFromDb;
-//          this.videoFileList.reverse();
         }, (response) => {
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
 
         });
 
@@ -148,7 +146,7 @@
             file = e.target.files || e.dataTransfer.files;
 
         if (!file.length) {
-          miniToastr.error("файл не выбран", "Ошибка!", 5000);
+          toastr.error("файл не выбран");
           return false;
         }
 
@@ -160,7 +158,6 @@
             progressStep = 0,
             progressAnimStep = 0,
             limit = 100;
-//        return false;
 
         let progress = () => {
           progressStep = progressStep +  progressEnd;
@@ -183,13 +180,13 @@
 
 
           if(response.body.code === 'lengthVideoError') {
-            miniToastr.error("Не правильный формат видео", "Ошибка!", 5000);
+            toastr.error("Не правильный формат видео");
           } else if(response.body.code === 'sizeFileHeaderError') {
-            miniToastr.error("Размер видео превышен 100 мб", "Ошибка!", 5000);
+            toastr.error("Размер видео превышен 100 мб");
           } else if(response.body.code === 'noThisVideo') {
-            miniToastr.error("файл должен быть в формате видео", "Ошибка!", 5000);
+            toastr.error("файл должен быть в формате видео");
           } else if(response.body.code === 'noHeightVideo') {
-            miniToastr.error("файл должен быть в качестве не ниже 360px", "Ошибка!", 5000);
+            toastr.error("файл должен быть в качестве не ниже 360px");
           }
           else if(response.body.code === "ok") {
             // Второе обращение fullFile
@@ -205,21 +202,19 @@
 
               if (response.body.code === 0) {
                 this.advertiserFunc();
-                miniToastr.success("Загрузка видео успешно завершена", "Оповещение", 5000);
                 this.procentLoading = 0;
-//                this.progressAnim = this.progressNumber;
               }
             }, (response) => {
               this.procentLoading = 0;
 
-              miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+              toastr.error("Неполадки в системе. Попробуйте позже.");
             });
           }
 
         }, (response) => {
           this.procentLoading = 0;
 
-          miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+          toastr.error("Неполадки в системе. Попробуйте позже.");
         });
       },
       deleteVideo: function (videoId) {
@@ -244,32 +239,30 @@
           this.$resource('deleteonevideo').save({}, dataJsonAdvertiser).then((response) => {
 
           if(response.body.resultFromDb.n === 1) {
-            miniToastr.info("Видео успешно удалено", "Оповещение", 5000);
             let deleteArr = this.videoFileList.filter(function (video) {
               return video._id !== videoID;
             });
             this.videoFileList = deleteArr;
           } else {
-            miniToastr.error("Операция не удалась", "Ошибка!", 5000);
+            toastr.error("Операция не удалась");
           }
         }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
 
           });
         } else { // Или экрана-владелец
           this.$resource('deleteoneschedullingvideo').save({}, dataJsonScreenHolder).then((response) => {
 
           if(response.body.resultFromDb.n === 1) {
-            miniToastr.info("Видео успешно удалено", "Оповещение", 5000);
             let deleteArr = this.videoFileList.filter(function (video) {
               return video._id !== videoID;
             });
             this.videoFileList = deleteArr;
           } else {
-            miniToastr.error("Операция не удалась", "Ошибка!", 5000);
+            toastr.error("Операция не удалась");
           }
         }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
 
           });
         }

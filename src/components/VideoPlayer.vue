@@ -20,7 +20,7 @@
   }
   #video {
     /*height: 100%;*/
-    height: 470px;
+    height: 420px;
     width: 100%;
   }
 

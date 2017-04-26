@@ -74,7 +74,7 @@
             initPlayer();
           } else {
             // This browser does not have the minimum set of APIs we need.
-            console.error('Browser not supported!');
+            // alert('Browser not supported video!');
           }
         }
 

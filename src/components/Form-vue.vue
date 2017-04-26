@@ -82,12 +82,13 @@
               <input type="number" placeholder="50" v-model="priceSecond" class="u-full-width" required>
             </label>
           </div>
-          <div class="form-skl" v-if="role === 'screenHolder'">
+          <!--<div class="form-skl" v-if="role === 'screenHolder'">   
             <label>График работы экрана <span class="red">&#9913;</span><br>
               С <input type="time" v-model="workStart" required>
               До <input type="time" v-model="workEnd" required>
-            </label>
+            </label> 
           </div>
+          -->
           <div class="form-skl">
             <label v-if="role === 'advertiser' || role === 'screenHolder'">
               <input type="checkbox" required>
@@ -115,7 +116,6 @@
         <router-link to="registration-screen" class="u-pull-right button-primary button">У меня есть экран</router-link>
         <div class="u-cf"></div>
       </div>-->
-
     </div>
   </div>
 </template>
@@ -123,7 +123,7 @@
 <script>
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
-  import miniToastr from 'mini-toastr'
+  import toastr from 'toastr';
 
   export default {
     name: 'login',
@@ -173,8 +173,8 @@
         saveAuth: localStorage['saveAuth'],
         streetAdress: '',
         priceSecond: '',
-        workStart: '',
-        workEnd: '',
+        // workStart: '',
+        // workEnd: '',
         isErrorPass: false,
         isErrorPassVerify: false,
         isErrorUser: false
@@ -202,8 +202,8 @@
             role: this.role,
             costOfSecond: String(this.priceSecond),
             nameOfCompany: this.nameCompany,
-            addressOfMonitor: `г. ${this.city}, ул. ${this.streetAdress}, дом. ${this.home}, кв. ${this.apartment}`,
-            graphOfWork: "с " + this.workStart + " до " + this.workEnd
+            addressOfMonitor: `г. ${this.city}, ул. ${this.streetAdress}, дом. ${this.home}, кв. ${this.apartment}`
+            // graphOfWork: "с " + this.workStart + " до " + this.workEnd
           };
 
         let roleSend = () => {
@@ -215,14 +215,16 @@
             if (response.body.resultFromDb.n === 1) {
                 this.$router.push('/email-activate');
             } else if (response.body.resultFromDb.message) {
-              miniToastr.error("Почта занята", "Ошибка!", 5000);
+              toastr.error("Почта занята");
             } else if (response.body.code === "noCsrfToken") {
-              miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+              toastr.error("Ваша сессия истекла");
+              let home = () => {
                 this.$router.push('/');
-              });
+              }
+              home();
             }
           }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
 
           });
         };
@@ -232,15 +234,15 @@
           this.$resource('login').save({}, dataJson).then((response) => {
 
             if (response.body.code === 'activateEmailError') {
-              miniToastr.error("Пожалуйста активируйте почту!", "Ошибка!", 5000);
+              toastr.error("Пожалуйста активируйте почту!", "Ошибка");
             } else if (response.body.code === 'userNotFound') {
-              miniToastr.error("Такой пользователь не найден", "Ошибка!", 5000);
+              toastr.error("Такой пользователь не найден", "Ошибка");
             } else if (response.body.code === 'noCsrfToken') {
-              miniToastr.error("Ваша сессия истекла", "Ошибка!", 5000, () => {
+              toastr.error("Ваша сессия истекла", "Ошибка", () => {
                 this.$router.push('/');
               });
             } else if (response.body.code === 'passWrongRegExp' || response.body.code === 'passWrong') {
-              miniToastr.error("Не правильный логин/пароль", "Ошибка!", 5000, () => {
+              toastr.error("Не правильный логин/пароль", "Ошибка", () => {
                 this.$router.push('/');
               });
             } else if (response.body.code === 'ok') {
@@ -263,7 +265,7 @@
             }
 
           }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка");
 
           });
 
@@ -297,11 +299,11 @@
             if (response.body.resultFromDb.length) {
               this.streets = response.body.resultFromDb;
             } else {
-              miniToastr.info("Список улиц пуст", "Оповещение!", 5000);
+              // miniToastr.info("Список улиц пуст", "Оповещение!", 5000);
             }
 
           }, (response) => {
-            miniToastr.error("Неполадки в системе. Попробуйте позже.", "Ошибка!", 5000);
+            toastr.error("Неполадки в системе. Попробуйте позже.");
 
           });
         }

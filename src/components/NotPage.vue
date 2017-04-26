@@ -10,7 +10,7 @@
               <img src="static/img/dribbble-shot-404.png" alt="404 tv">
             </div>
             <div class="text-center">
-              <a href="#/">Вернутся на главную</a> - <a href="#/">Авторизоваться</a>
+              <a href="index.html">Вернутся на главную</a> - <a href="#/">Авторизоваться</a>
             </div>
           </div>
         </div>
