@@ -126,7 +126,8 @@
       }
 
     },
-    filters: {
+    filters: 
+        {
             date(data) 
             {
                 return moment(data).format('YYYY-MM-DD');

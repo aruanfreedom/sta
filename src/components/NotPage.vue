@@ -26,9 +26,11 @@
   import TopMenu from './TopMenu';
   import Bottom from './Bottom';
 
-  export default {
+  export default 
+  {
     name: 'notPage',
-    components: {
+    components: 
+    {
       'TopMenu': TopMenu,
       'Bottom': Bottom
     }
